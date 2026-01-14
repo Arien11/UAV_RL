@@ -1,7 +1,5 @@
 # 20250220 Wakkk
 # Quadrotor SE3 Control Demo
-import mujoco
-import mujoco.viewer as viewer
 from QuadDyna.controller.se3_controller import *
 from motor_mixer import *
 
@@ -70,33 +68,33 @@ def calc_motor_input(krpm):
 
 
 # 加载模型回调函数
-def load_callback(m=None, d=None):
-    mujoco.set_mjcb_control(None)
-    m = mujoco.MjModel.from_xml_path('./crazyfile/scene.xml')
-    d = mujoco.MjData(m)
-    if m is not None:
-        mujoco.set_mjcb_control(lambda m, d: control_callback(m, d))  # 设置控制回调函数
-    return m, d
+# def load_callback(m=None, d=None):
+#     mujoco.set_mjcb_control(None)
+#     m = mujoco.MjModel.from_xml_path('./crazyfile/scene.xml')
+#     d = mujoco.MjData(m)
+#     if m is not None:
+#         mujoco.set_mjcb_control(lambda m, d: control_callback(m, d))  # 设置控制回调函数
+#     return m, d
 
 
-# 简易平面圆形轨迹生成
-def simple_trajectory(time):
-    wait_time = 1.5  # 起飞到开始点等待时间
-    height = 0.3  # 绕圈高度
-    radius = 0.5  # 绕圈半径
-    speed = 0.3  # 绕圈速度
-    # 构建机头朝向
-    _cos = np.cos(2 * np.pi * speed * (time - wait_time))
-    _sin = np.sin(2 * np.pi * speed * (time - wait_time))
-    _heading = np.array([-_sin, _cos, 0])
-    # 首先等待起飞到目标开始点位
-    if time < wait_time:
-        return np.array([radius, 0, height]), np.array([0.0, 1.0, 0.0])  # Start Point
-    # 随后开始绕圈(逆时针旋转)
-    _x = radius * _cos
-    _y = radius * _sin
-    _z = height
-    return np.array([_x, _y, _z]), _heading  # Trajectory Point And Heading
+# # 简易平面圆形轨迹生成
+# def simple_trajectory(time):
+#     wait_time = 1.5  # 起飞到开始点等待时间
+#     height = 0.3  # 绕圈高度
+#     radius = 0.5  # 绕圈半径
+#     speed = 0.3  # 绕圈速度
+#     # 构建机头朝向
+#     _cos = np.cos(2 * np.pi * speed * (time - wait_time))
+#     _sin = np.sin(2 * np.pi * speed * (time - wait_time))
+#     _heading = np.array([-_sin, _cos, 0])
+#     # 首先等待起飞到目标开始点位
+#     if time < wait_time:
+#         return np.array([radius, 0, height]), np.array([0.0, 1.0, 0.0])  # Start Point
+#     # 随后开始绕圈(逆时针旋转)
+#     _x = radius * _cos
+#     _y = radius * _sin
+#     _z = height
+#     return np.array([_x, _y, _z]), _heading  # Trajectory Point And Heading
 
 
 # 初始化SE3控制器
@@ -115,7 +113,8 @@ log_count = 0
 
 def control_callback(m, d):
     global log_count, gravity, mass, dt
-    
+    # ================== 数据获取 ================== #
+    # 接口修改成env中的obs
     _pos = d.qpos
     _vel = d.qvel
     _acc = d.qacc
@@ -134,7 +133,7 @@ def control_callback(m, d):
     quat = np.array([quat_x, quat_y, quat_z, quat_w])  # x y z w
     omega = np.array([gyro_x, gyro_y, gyro_z])  # 角速度
     
-    # 构建目标状态
+    # ================== 关键：构建目标状态(轨迹输入部分) ================== #
     # goal_pos, goal_heading = simple_trajectory(d.time)        # 目标位置
     goal_pos, goal_heading = np.array([0.0, 0.0, 0.3]), np.array([1.0, 0.0, 0.0])  # 目标位置
     
@@ -145,7 +144,7 @@ def control_callback(m, d):
     # 构建当前状态
     curr_state = State(_pos, _vel, quat, omega)
     
-    # 更新控制器
+    # Update Controller
     # forward = np.array([1.0, 0.0, 0.0])  # 前向方向
     forward = goal_heading
     control_command = ctrl.control_update(curr_state, goal_state, dt, forward)
@@ -155,16 +154,18 @@ def control_callback(m, d):
     # Mixer
     mixer_thrust = ctrl_thrust * gravity * mass  # 机体总推力(N)
     mixer_torque = ctrl_torque * torque_scale  # 机体扭矩(Nm)
-    # 输出到电机
+    
+    # ================== 输出控制指令到电机 ================== #
+    # 修改到
     motor_speed = mixer.calculate(mixer_thrust, mixer_torque[0], mixer_torque[1], mixer_torque[2])  # 动力分配
     d.actuator('motor1').ctrl[0] = calc_motor_input(motor_speed[0])
     d.actuator('motor2').ctrl[0] = calc_motor_input(motor_speed[1])
     d.actuator('motor3').ctrl[0] = calc_motor_input(motor_speed[2])
     d.actuator('motor4').ctrl[0] = calc_motor_input(motor_speed[3])
     
-    log_count += 1
-    if log_count >= 500:
-        log_count = 0
+    # log_count += 1
+    # if log_count >= 500:
+    #     log_count = 0
         # 这里输出log
         # print(f"Control Linear: X:{ctrl_linear[0]:.2f} Y:{ctrl_linear[1]:.2f} Z:{ctrl_linear[2]:.2f}")
         # print(f"Quat: x:{quat[0]:.2f} y:{quat[1]:.2f} z:{quat[2]:.2f} w:{quat[3]:.2f}")
@@ -175,5 +176,3 @@ def control_callback(m, d):
         # print(f"Radius: {radius:.2f}")
 
 
-if __name__ == '__main__':
-    viewer.launch(loader=load_callback)
