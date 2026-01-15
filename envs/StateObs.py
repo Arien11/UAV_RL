@@ -40,14 +40,15 @@ class ObservationSpace:
     def get_observation(self, state):
         if self.include_qpos:
             position = state['qpos'][:3]
-            quaternion = state['qpos'][3:]
+            qw, qx, qy, qz = state['qpos'][3:]
+            quaternion = np.array([qx, qy, qz, qw])
         if self.include_qvel:
             linear_vel = state['qvel'][:3]
             angular_vel = state['qvel'][3:]
         obs = np.concatenate([
             position,  # 3
-            quaternion,  # 4
             linear_vel,  # 3
+            quaternion,  # 4
             angular_vel,  # 3
         ])
         

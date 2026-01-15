@@ -9,51 +9,39 @@ from typing import Optional, Tuple, Dict, Any
 import yaml
 
 
-class EnvTest(gym.Env):
+class QuadEnv(gym.Env):
     
     def __init__(
             self,
-            model_loader: Optional[XMLModelLoader] = None,
             observation_builder: Optional[ObservationSpace] = None,
-            config: Optional[Dict] = None,
-            VisEnv: bool = False,
+            simulator: Optional[BaseSimulator] = None,
+            config: Optional[Dict] = None
     ):
-        self.model_loader = model_loader
         self.observation_builder = observation_builder
+        self.simulator = simulator
         self.config = config or {}
-        self.VisEnv = VisEnv
-        
-        self.model = None
-        self.simulator = None
-        self.renderer = None
+        self.last_state = None
         self._initEnvs()
     
     def _initEnvs(self):
-        """环境初始化"""
-        if self.model is None:
-            # 加载模型
-            self.model = self.model_loader.load(self.config.get('model', {}))
-        
-        # 创建仿真器
-        self.simulator = MuJoCoSimulator(self.model)
-        
         # 初始化观测构建器(外部若未导入，则自己生成)
         if self.observation_builder is None:
             self.observation_builder = ObservationSpace()
         
         # 初始化动作空间
-        self._setup_action_space()
+        # self._setup_action_space()
         
         # 初始化观测空间
         self._setup_observation_space()
     
     def _setup_action_space(self):
         """设置动作空间"""
-        n_actuators = self.model.nu
-        self.action_space = gym.spaces.Box(
-            low=-1.0, high=1.0,
-            shape=(n_actuators,), dtype=np.float32
-        )
+        # n_actuators = self.model.nu
+        # self.action_space = gym.spaces.Box(
+        #     low=-1.0, high=1.0,
+        #     shape=(n_actuators,), dtype=np.float32
+        # )
+        ...
     
     def _setup_observation_space(self):
         init_state = self.simulator._get_state()
@@ -74,6 +62,7 @@ class EnvTest(gym.Env):
         
         # 重置仿真器
         sim_state = self.simulator.reset()
+        self.last_state = sim_state
         
         # 获取观测
         if self.observation_builder:
@@ -87,10 +76,14 @@ class EnvTest(gym.Env):
         
         return obs, info
     
-    def step(self, action):
+    def step(self, action=None):
         """"""
-        state = self.simulator.step(action)
         
+        # 1. 确保动作在有效范围内
+        # action = np.clip(action, 0.0, 1.0)
+        
+        state = self.simulator.step(action)
+        self.last_state = state
         # ============= calculate reward ============= #
         reward = 0
         # if self.reward_calculator:
@@ -112,15 +105,13 @@ class EnvTest(gym.Env):
         # truncated, truncation_reason = self.task.check_truncation(sim_state)
         
         # ============= create traj_info ============= #
-        ### used for data visualization
         info = self._get_info(state)
         info.update({
             # 'termination_reason': termination_reason,
             # 'truncation_reason': truncation_reason,
-            'sim_time': state['time']
+            'time': state['time']
         })
         # info.update(reward_info)
-        
         return obs, reward, terminated, truncated, info
     
     @staticmethod
@@ -130,10 +121,6 @@ class EnvTest(gym.Env):
             'qpos': sim_state['qpos'].copy(),
             'qvel': sim_state['qvel'].copy()
         }
-    
-    def Vis_Env(self):
-        """渲染环境"""
-        self.simulator.render()
 
 
 if __name__ == '__main__':
@@ -145,11 +132,11 @@ if __name__ == '__main__':
         with open(config_path, 'r') as f:
             env_config = yaml.safe_load(f)
     
-    Env = EnvTest(
+    Env = QuadEnv(
         model_loader=XML_loader,
         # observation_builder=observation_builder,
         config=env_config,
-        VisEnv=True
+        EnableVis=True
     )
-    Env.Vis_Env()
+    Env.render()
     # print(Env.model)

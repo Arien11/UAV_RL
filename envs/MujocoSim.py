@@ -65,75 +65,85 @@ class XMLModelLoader:
 
 class BaseSimulator(ABC):
     @abstractmethod
-    def render(self):
-        """不同仿真器的可视化"""
+    def step(self):
+        pass
+    
+    @abstractmethod
+    def _get_state(self):
+        pass
+    
+    @abstractmethod
+    def step(self, action):
+        pass
+    
+    @abstractmethod
+    def reset(self):
         pass
 
 
 class MuJoCoSimulator(BaseSimulator):
     def __init__(self, model: mujoco.MjModel):
-        self.model = model
-        self.data = mujoco.MjData(model)
-        # 传感器ID映射
-        # self.sensor_ids = {
-        #     'gyro': mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, "body_gyro"),
-        #     'accel': mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, "body_linacc"),
-        #     'quat': mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, "body_quat"),
-        # }
-        
+        self._model = model
+        self._data = mujoco.MjData(model)
+        self.viewer = None  # 添加viewer引用
+        self.visualization_enabled = False  # 可视化状态标志
         # 智能体ID(无人机)
         self.robot_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "cf2")
     
-    def step(self, control_action=None):
-        if control_action is not None:
+    @property
+    def data(self):
+        """获取data属性"""
+        return self._data
+    
+    @property
+    def model(self):
+        """获取model属性"""
+        return self._model
+    
+    def step(self, action=None):
+        if action is not None:
             # 这里就是给到控制输出的位置
-            self.data.ctrl[:] = control_action
+            self._data.ctrl[:] = action
         
-        mujoco.mj_step(self.model, self.data)
+        mujoco.mj_step(self._model, self._data)
         
         return self._get_state()
     
     def reset(self):
         """重置仿真"""
-        mujoco.mj_resetData(self.model, self.data)
+        mujoco.mj_resetData(self._model, self._data)
         return self._get_state()
     
-    def render(self):
-        viewer.launch(loader=self.load_callback)
+    def enable_visualization(self):
+        viewer.launch(self._model, self._data)
+        if viewer.is_running():
+            print("可视化窗口启动成功")
+            self.viewer.sync()
     
-    def load_callback(self):
-        mujoco.set_mjcb_control(None)
-        m = self.model
-        d = self.data
-        if m is not None:
-            mujoco.set_mjcb_control(lambda m, d: self.control_callback(m, d))  # 设置控制回调函数
-        return m, d
-    
-    def control_callback(self, m, d):
-        ...
+    def sync_viewer(self):
+        """同步数据"""
+        if self.viewer is not None and self.viewer.is_running():
+            self.viewer.sync()
+        else:
+            print("viewer wrong...")
     
     def _get_state(self):
         """获取纯物理状态"""
         return {
-            'qpos': self.data.qpos.copy(),  # [x, y, z, qw, qx, qy, qz]
-            'qvel': self.data.qvel.copy(),  # [vx, vy, vz, wx, wy, wz]
-            'time': self.data.time,
-            'ctrl': self.data.ctrl.copy()
+            'qpos': self._data.qpos.copy(),  # [x, y, z, qw, qx, qy, qz]
+            'qvel': self._data.qvel.copy(),  # [vx, vy, vz, wx, wy, wz]
+            'time': self._data.time,
+            'ctrl': self._data.ctrl.copy()
         }
     
     def _get_sensor_state(self):
         """获取传感器读数（模拟真实传感器）"""
         return {
-            'gyro': self.data.sensordata[0:3],  # 陀螺仪
-            'accel': self.data.sensordata[3:6],  # 加速度计
-            'quat': self.data.sensordata[6:10],  # 姿态四元数
+            'gyro': self._data.sensordata[0:3],  # 陀螺仪
+            'accel': self._data.sensordata[3:6],  # 加速度计
+            'quat': self._data.sensordata[6:10],  # 姿态四元数
         }
-    
-    def _isVis(self):
-        self.vis = True
 
-
-# sim = MuJoCoSimulator()
 
 if __name__ == '__main__':
     ...
