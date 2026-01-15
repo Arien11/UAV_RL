@@ -141,13 +141,6 @@ class Quadrotor:
         
         return motor_inputs, control_info
     
-    # def _log_control(self, curr_state, goal_state, control_command):
-    #     """记录控制信息"""
-    #     print(f"Control Thrust: {control_command.thrust:.4f}")
-    #     print(f"Position: X:{curr_state.pos[0]:.2f} Y:{curr_state.pos[1]:.2f} Z:{curr_state.pos[2]:.2f}")
-    #     print(f"Goal Pos: X:{goal_state.pos[0]:.2f} Y:{goal_state.pos[1]:.2f} Z:{goal_state.pos[2]:.2f}")
-    #     print("-" * 40)
-    
     def _get_dt(self):
         return self.dt
 

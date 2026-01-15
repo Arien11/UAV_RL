@@ -1,12 +1,13 @@
 import gym
 
-from .StateObs import *
-from .MujocoSim import *
 from typing import Dict, Any, Callable
 from dataclasses import dataclass
 from typing import Optional, Tuple, Dict, Any
-
 import yaml
+
+from .Observe import *
+from .RewardTask import *
+from .MujocoSim import *
 
 
 class QuadEnv(gym.Env):
@@ -15,10 +16,12 @@ class QuadEnv(gym.Env):
             self,
             observation_builder: Optional[ObservationSpace] = None,
             simulator: Optional[BaseSimulator] = None,
+            task: Optional[BaseTask] = None,
             config: Optional[Dict] = None
     ):
         self.observation_builder = observation_builder
         self.simulator = simulator
+        self.task = task
         self.config = config or {}
         self.last_state = None
         self._initEnvs()
@@ -86,10 +89,10 @@ class QuadEnv(gym.Env):
         self.last_state = state
         # ============= calculate reward ============= #
         reward = 0
-        # if self.reward_calculator:
-        #     reward, reward_info = self.reward_calculator.calculate(
-        #         sim_state, action
-        #     )
+        if self.task:
+            reward, reward_info = self.task.compute_reward(
+                state, action
+            )
         # else:
         #     reward = self.task.compute_reward(sim_state, action)
         #     reward_info = {}
