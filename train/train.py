@@ -11,8 +11,16 @@ from envs.Envs import QuadEnv
 import matplotlib.pyplot as plt
 from envs.MujocoSim import *
 from QuadControl.Quad import Quadrotor
+from envs.RewardTask import *
 import mujoco.viewer as viewer
 
+
+# if torch.cuda.is_available():
+#     print("choose to use gpu...")
+#     args.device = torch.device("cuda:0")
+# else:
+#     print("choose to use cpu...")
+#     args.device = torch.device("cpu")
 
 # 可视化（可选）
 def plot_results(data_log):
@@ -62,22 +70,31 @@ def plot_results(data_log):
 
 
 if __name__ == '__main__':
-    config_path = "E:\\UAV_RL\config\env_config.yaml"
+    env_config_path = "../config/env_config.yaml"
+    task_config_path = "../config/Task_config.yaml"
     
     # =========================== 仿真器 =========================== #
     XML_loader = XMLModelLoader()
     env_config = {}
-    if config_path:
-        with open(config_path, 'r') as f:
+    if env_config_path:
+        with open(env_config_path, 'r') as f:
             env_config = yaml.safe_load(f)
     model = XML_loader.load(env_config.get('model', {}))
     Mujoco_simulator = MuJoCoSimulator(model)
     
+    # =========================== 任务 =========================== #
+    # 加载配置
+    task_config = {}
+    if task_config_path:
+        with open(task_config_path, 'r') as f:
+            task_config = yaml.safe_load(f)
+    # 处理配置
+    task = Hover(task_config)
     # =========================== 环境 =========================== #
     env = QuadEnv(
-        # observation_builder=observation_builder,
+        # observation_space=observation_builder,
         simulator=Mujoco_simulator,
-        config=env_config,
+        task=task
     )
     
     # =========================== 控制、决策 =========================== #
@@ -123,7 +140,7 @@ if __name__ == '__main__':
                     elapsed = time.time() - frame_start
                     if elapsed < frame_interval:
                         time.sleep(frame_interval - elapsed)
-                        
+                
                 # 打印数据 =============
                 if step % 10 == 0:
                     data_log['time'].append(info['time'])
@@ -131,32 +148,8 @@ if __name__ == '__main__':
                     data_log['reward'].append(total_reward)
                     data_log['actions'].append(action.copy())
                     print(f"pos_z:{info['qpos'][2]:.2f}")
+                    print(f"total_reward:{total_reward:.2f}")
                     print(f"action:{action.copy()}")
                     print()
                 total_reward += reward
-                
 
-# print(f"Episode {episode + 1}: Total reward = {total_reward:.2f}\n")
-# 记录数据
-# if step % 10 == 0:
-# data_log['time'].append(info['time'])
-# # data_log['height'].append(info['qpos'][2])
-# # data_log['target_height'].append(0.3)
-# data_log['reward'].append(reward)
-# data_log['actions'].append(action.copy())
-# print(f"step: {step}")
-# print(f"pos_z:{info['qpos'][2]:.2f}")
-# print(f"action:{action.copy()}")
-# # # print(f"reward:{reward:.2f}")
-# # print(f"time:{info['time']:.2f}s")
-# print()
-# parser = argparse.ArgumentParser("Hyperparameters Setting for PPO")
-# parser.add_argument("--train_config", type=str, default=os.path.join("config", "train_config.yaml"))
-# args = parser.parse_args()
-# print(args.train_config)
-# if torch.cuda.is_available():
-#     print("choose to use gpu...")
-#     args.device = torch.device("cuda:0")
-# else:
-#     print("choose to use cpu...")
-#     args.device = torch.device("cpu")

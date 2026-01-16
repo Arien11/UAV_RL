@@ -1,0 +1,8 @@
+Hover:
+  Balance:
+    lambda_pos: -1
+    lambda_vel: -0.1
+    lambda_jerk: 1
+  effort:
+    lambda_effort: -0.001
+

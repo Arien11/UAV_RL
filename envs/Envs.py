@@ -17,10 +17,10 @@ class QuadEnv(gym.Env):
             observation_builder: Optional[ObservationSpace] = None,
             simulator: Optional[BaseSimulator] = None,
             task: Optional[BaseTask] = None,
-            config: Optional[Dict] = None
+            config=None
     ):
         self.observation_builder = observation_builder
-        self.simulator = simulator
+        self.simulator = simulator or {}
         self.task = task
         self.config = config or {}
         self.last_state = None
@@ -30,6 +30,9 @@ class QuadEnv(gym.Env):
         # 初始化观测构建器(外部若未导入，则自己生成)
         if self.observation_builder is None:
             self.observation_builder = ObservationSpace()
+        
+        # 初始化相关任务
+        self.task.setup(self.simulator)
         
         # 初始化动作空间
         # self._setup_action_space()
@@ -80,22 +83,13 @@ class QuadEnv(gym.Env):
         return obs, info
     
     def step(self, action=None):
-        """"""
-        
-        # 1. 确保动作在有效范围内
-        # action = np.clip(action, 0.0, 1.0)
-        
+        # action = np.clip(action, 0.0, 1.0) # 确保动作在有效范围内
         state = self.simulator.step(action)
         self.last_state = state
         # ============= calculate reward ============= #
         reward = 0
         if self.task:
-            reward, reward_info = self.task.compute_reward(
-                state, action
-            )
-        # else:
-        #     reward = self.task.compute_reward(sim_state, action)
-        #     reward_info = {}
+            reward = self.task.compute_reward(state, action)
         
         # ============= get observation ============= #
         if self.observation_builder:
@@ -127,19 +121,4 @@ class QuadEnv(gym.Env):
 
 
 if __name__ == '__main__':
-    config_path = "../config/env_config.yaml"
-    XML_loader = XMLModelLoader()
-    # 加载配置
-    env_config = {}
-    if config_path:
-        with open(config_path, 'r') as f:
-            env_config = yaml.safe_load(f)
-    
-    Env = QuadEnv(
-        model_loader=XML_loader,
-        # observation_builder=observation_builder,
-        config=env_config,
-        EnableVis=True
-    )
-    Env.render()
-    # print(Env.model)
+    ...

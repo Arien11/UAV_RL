@@ -4,59 +4,19 @@ from dataclasses import dataclass
 from typing import List, Dict
 
 
-@dataclass
-class RewardComponent:
-    """奖励组件"""
-    name: str
-    weight: float
-    value: float
-    calculator: callable
-
-
-class RewardCalculate:
-    """组合奖励计算器"""
-    
-    def __init__(self):
-        self.Rewards: List[RewardComponent] = []
-        self.reward_registry = {}
-    
-    def add_reward(self, reward: RewardComponent):
-        """注册奖励组件"""
-        self.Rewards.append(reward)
-    
-    def calculate(self, state, action, info=None) -> Dict:
-        """计算总奖励"""
-        total_reward = 0.0
-        reward_info = {}
-        
-        for reward in self.Rewards:
-            reward.value = reward.calculator(state, action, info)
-            weighted_reward = reward.value * reward.weight
-            total_reward += weighted_reward
-            reward_info[f"reward_{reward.name}"] = reward.value
-            reward_info[f"reward_{reward.name}_weighted"] = weighted_reward
-        
-        reward_info["reward_total"] = total_reward
-        return total_reward, reward_info
-
-
 # =========================== 任务抽象基类 =========================== #
 class BaseTask(ABC):
     
     def __init__(self, config=None):
-        self.config = config or {}
         self.simulator = None
         self.goal = None
+        self.Task_Settings = config or {}
+        self.Rewards = None
         self._termination_conditions = []
         self._truncation_conditions = []
     
     @abstractmethod
-    def setup(self, simulator, **kwargs):
-        """
-        任务初始化
-        :param simulator: 使用的仿真器
-        :param kwargs: 目标任务
-        """
+    def setup(self, simulator):
         pass
     
     @abstractmethod
@@ -91,29 +51,32 @@ class BaseTask(ABC):
 
 
 # =========================== 具体任务 =========================== #
-class BalanceTask(BaseTask):
+class Hover(BaseTask):
     def __init__(self, config=None):
         super().__init__(config)
         # 添加终止条件
         self.add_termination_condition(self._check_fall)
+        self.goal = 1
+        self.Task_name = "Hover"
     
-    def setup(self, simulator, **kwargs):
+    def setup(self, simulator):
         self.simulator = simulator
-        self.goal = self.config.get('target_position', 0.0)
+        self.Rewards = self.Task_Settings[self.Task_name]
     
     def compute_reward(self, state, action, info=None):
-        # 平衡任务奖励
         position = state['qpos'][0]
         velocity = state['qvel'][0]
         
-        # 位置奖励
-        position_cost = -abs(position - self.goal)
-        # 速度惩罚
-        velocity_cost = -0.1 * abs(velocity)
-        # 控制代价
-        control_cost = -0.001 * np.sum(np.square(action))
+        # 平衡奖励
+        Balance_Param = self.Rewards["Balance"]
+        pos_reward = abs(position - self.goal) * Balance_Param["lambda_pos"]
+        vel_reward = abs(velocity) * Balance_Param["lambda_vel"]
         
-        return position_cost + velocity_cost + control_cost
+        # 动力损耗奖励
+        Control_Param = self.Rewards["effort"]
+        control_reward = np.sum(np.square(action)) * Control_Param["lambda_effort"]
+        
+        return pos_reward + vel_reward + control_reward
     
     def get_observation(self, state):
         """获取观测"""
@@ -125,35 +88,20 @@ class BalanceTask(BaseTask):
         return abs(angle) > 0.5
 
 
-class AvoidTask(BaseTask):
-    def __init__(self, config=None):
-        super().__init__(config)
-        # 添加终止条件
-        self.add_termination_condition(self._check_collide)
+if __name__ == '__main__':
     
-    def setup(self, simulator, **kwargs):
-        self.simulator = simulator
-        self.goal = self.config.get('target_position', 0.0)
+    import yaml
     
-    def get_observation(self, state):
-        """获取观测"""
-        pass
+    config_path = "../config/Task_config.yaml"
+    # 加载配置
+    task_config = {}
+    if config_path:
+        with open(config_path, 'r') as f:
+            task_config = yaml.safe_load(f)
+    # 处理配置
+    rewards = task_config
     
-    def compute_reward(self, state, action, info=None):
-        # 平衡任务奖励
-        position = state['qpos'][0]
-        velocity = state['qvel'][0]
-        
-        # 位置奖励
-        position_cost = -abs(position - self.goal)
-        # 速度惩罚
-        velocity_cost = -0.1 * abs(velocity)
-        # 控制代价
-        control_cost = -0.001 * np.sum(np.square(action))
-        
-        return position_cost + velocity_cost + control_cost
+    print(rewards["Hover"]["Balance"]["lambda_pos"])
+    # 输出: {'lambda_1': 2, 'lambda_2': 1, 'lambda_3': 1}
     
-    def _check_collide(self, sim_state, info=None):
-        # 检查是否摔倒
-        angle = sim_state['qpos'][1]
-        return abs(angle) > 0.5
+    print(rewards["Hover"]["effort"])
