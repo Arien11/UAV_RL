@@ -1,10 +1,5 @@
-gravity: 9.8066  # 重力加速度 单位m/s^2
-mass: 0.033  # 飞行器质量 单位kg
-Ct: 3.25e-4  # 电机推力系数 (N/krpm^2)
-Cd: 7.9379e-6  # 电机反扭系数 (Nm/krpm^2)
-
-arm_length: 0.065 / 2.0  # 电机力臂长度 单位m
-max_thrust: 0.1573  # 单个电机最大推力 单位N (电机最大转速22krpm)
-max_torque: 3.842e-03  # 单个电机最大扭矩 单位Nm (电机最大转速22krpm)
-
-dt: 0.001
+control_dt: 0.001
+sim_dt: 0.001
+obs_history_len: 1
+action_smoothing: 0.5
+init_noise: 3

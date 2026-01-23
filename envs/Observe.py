@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
+import interface
 
 
 # class ObservationSpaceBuilder(ABC):
@@ -14,6 +15,30 @@ import numpy as np
 #     def get_observation(self, sim_state):
 #         """获取观测值"""
 #         pass
+
+
+def get_pos(interface):
+    return interface.get_pos()
+
+
+def get_quat(interface):
+    return interface.get_quat()
+
+
+def get_vel(interface):
+    return interface.get_vel()
+
+
+def get_angular_vel(interface):
+    return interface.get_angular_vel()
+
+
+def get_acc(interface):
+    return interface.get_acc()
+
+
+def get_cvel(interface):
+    return interface.get_cvel()
 
 
 class ObservationSpace:
@@ -36,6 +61,21 @@ class ObservationSpace:
             'low': -np.inf,
             'high': np.inf
         }
+    
+    def get_quat(self):
+        pass
+    
+    def get_orientation(self):
+        pass
+    
+    def get_velocity(self):
+        pass
+    
+    def get_positions(self):
+        pass
+    
+    def get_angel_vel(self):
+        pass
     
     def get_observation(self, state):
         if self.include_qpos:

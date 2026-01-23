@@ -5,6 +5,9 @@ from QuadControl.utils.motor_mixer import *
 
 class Quadrotor:
     def __init__(self):
+        self.task = None
+        self.iteration_count = 0
+        
         # 物理参数
         self.gravity = 9.8066  # 重力加速度 单位m/s^2
         self.mass = 0.033  # 飞行器质量 单位kg
@@ -143,7 +146,52 @@ class Quadrotor:
     
     def _get_dt(self):
         return self.dt
+    
+    def _do_simulation(self, target, n_frames):
+        ...
+    
+    def step(self, action, offset=None):
+        if not isinstance(action, np.ndarray):
+            raise TypeError("Expected action to be a numpy array")
+        
+        if not isinstance(action, np.ndarray):
+            raise TypeError("Expected action to be a numpy array")
+        
+        action = np.copy(action)
 
+        # === 1. 解析 RL action（轨迹残差） ===
+        delta_pos = action[:3]  # Δx, Δy, Δz
+        delta_yaw = action[3]  # Δψ
+
+        # === 2. 当前时间的参考轨迹 ===
+        ref_pos, ref_heading = self.task.get_reference(self.time)
+
+        # === 3. 构造 goal ===
+        goal_pos = ref_pos + delta_pos
+
+        ref_yaw = np.arctan2(ref_heading[1], ref_heading[0])
+        goal_yaw = ref_yaw + delta_yaw
+        goal_heading = np.array([
+            np.cos(goal_yaw),
+            np.sin(goal_yaw),
+            0.0
+        ])
+
+        # === 4. 用 SE3 控制器算电机 ===
+        obs = self._get_obs()
+        motor_inputs, _ = self.controller._cal_control(
+            obs=obs,
+            goal=(goal_pos, goal_heading),
+            time=self.time
+        )
+
+        # === 5. 真正推进物理仿真 ===
+        self._do_simulation(motor_inputs, self.frame_skip)
+
+        # === 6. task 逻辑保持不变 ===
+        self.task.step()
+        rewards = self.task.calc_reward(action)
+        done = self.task.done()
 
 if __name__ == '__main__':
     def simple_trajectory(time):

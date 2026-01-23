@@ -2,52 +2,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, Dict
-
-
-# =========================== 任务抽象基类 =========================== #
-class BaseTask(ABC):
-    
-    def __init__(self, config=None):
-        self.simulator = None
-        self.goal = None
-        self.Task_Settings = config or {}
-        self.Rewards = None
-        self._termination_conditions = []
-        self._truncation_conditions = []
-    
-    @abstractmethod
-    def setup(self, simulator):
-        pass
-    
-    @abstractmethod
-    def compute_reward(self, state, action, info=None):
-        """计算任务奖励"""
-        pass
-    
-    @abstractmethod
-    def get_observation(self, state):
-        """获取观测"""
-        pass
-    
-    def check_termination(self, sim_state, info=None):
-        """检查终止条件"""
-        for condition in self._termination_conditions:
-            if condition(sim_state, info):
-                return True, condition.__name__
-        return False, None
-    
-    def check_truncation(self, sim_state, info=None):
-        """检查截断条件"""
-        for condition in self._truncation_conditions:
-            if condition(sim_state, info):
-                return True, condition.__name__
-        return False, None
-    
-    def add_termination_condition(self, condition):
-        self._termination_conditions.append(condition)
-    
-    def add_truncation_condition(self, condition):
-        self._truncation_conditions.append(condition)
+from .base_task import BaseTask
 
 
 # =========================== 具体任务 =========================== #
@@ -63,7 +18,7 @@ class Hover(BaseTask):
         self.simulator = simulator
         self.Rewards = self.Task_Settings[self.Task_name]
     
-    def compute_reward(self, state, action, info=None):
+    def calc_reward(self, state, action, info=None):
         position = state['qpos'][0]
         velocity = state['qvel'][0]
         
@@ -86,6 +41,12 @@ class Hover(BaseTask):
         # 检查是否摔倒
         angle = sim_state['qpos'][1]
         return abs(angle) > 0.5
+    
+    def step(self):
+        ...
+    
+    def done(self):
+        ...
 
 
 if __name__ == '__main__':
