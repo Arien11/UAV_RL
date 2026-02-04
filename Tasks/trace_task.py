@@ -69,15 +69,14 @@ class TraceTask(BaseTask):
         ref_yaw = np.arctan2(ref_heading[1], ref_heading[0])
         yaw_error = angle_wrap(yaw - ref_yaw)
         
-        reward = 0.0
-        reward -= 2.0 * pos_error ** 2
-        reward -= 0.5 * np.linalg.norm(current_vel) ** 2
-        reward -= 0.3 * yaw_error ** 2
-        reward -= 0.01 * np.linalg.norm(action) ** 2
+        reward = {
+            "pos_err": 2.0 * pos_error ** 2,
+            "vel_err": 0.5 * np.linalg.norm(current_vel) ** 2,
+            "yaw_err": 0.3 * yaw_error ** 2,
+            "action_err": 0.01 * np.linalg.norm(action) ** 2,
+            "fly_err": 0.5 if pos_error < 0.1 else 0  # 稳定飞行奖励
+        }
         
-        # 稳定飞行奖励
-        if pos_error < 0.1:
-            reward += 0.5
         return reward
     
     def done(self):

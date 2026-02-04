@@ -14,6 +14,7 @@ from Tasks.Hover_Task import *
 import mujoco.viewer as viewer
 
 from rl.workers.rolloutworker import RolloutWorker
+from rl.storage.rollout_storage import BatchData
 
 
 class Training:
@@ -64,33 +65,33 @@ class Training:
             print("Loaded (pre-trained) critic from: ", path_to_critic)
             # Pretrained models already have obs normalization embedded
             self.obs_rms = None
-        else:
-            if args.recurrent:
-                policy = Gaussian_LSTM_Actor(obs_dim, action_dim, init_std=args.std_dev, learn_std=args.learn_std)
-                critic = LSTM_V(obs_dim)
-            else:
-                policy = Gaussian_FF_Actor(
-                    obs_dim, action_dim, init_std=args.std_dev, learn_std=args.learn_std, bounded=False
-                )
-                critic = FF_V(obs_dim)
-            
-            # Setup observation normalization (reuse env_instance from above)
-            if hasattr(env_instance, "obs_mean") and hasattr(env_instance, "obs_std"):
-                # Use fixed normalization params from environment
-                obs_mean, obs_std = env_instance.obs_mean, env_instance.obs_std
-                self.obs_rms = None  # No running stats needed
-                print("Using fixed observation normalization from environment.")
-            else:
-                # Use running mean/std that will be updated during training
-                self.obs_rms = RunningMeanStd(shape=(obs_dim,))
-                obs_mean, obs_std = self.obs_rms.mean, self.obs_rms.std
-                print("Using running observation normalization (will update during training).")
-            
-            with torch.no_grad():
-                policy.obs_mean = torch.tensor(obs_mean, dtype=torch.float32)
-                policy.obs_std = torch.tensor(obs_std, dtype=torch.float32)
-                critic.obs_mean = policy.obs_mean
-                critic.obs_std = policy.obs_std
+        # else:
+        #     if args.recurrent:
+        #         policy = Gaussian_LSTM_Actor(obs_dim, action_dim, init_std=args.std_dev, learn_std=args.learn_std)
+        #         critic = LSTM_V(obs_dim)
+        #     else:
+        #         policy = Gaussian_FF_Actor(
+        #             obs_dim, action_dim, init_std=args.std_dev, learn_std=args.learn_std, bounded=False
+        #         )
+        #         critic = FF_V(obs_dim)
+        #
+        #     # Setup observation normalization (reuse env_instance from above)
+        #     if hasattr(env_instance, "obs_mean") and hasattr(env_instance, "obs_std"):
+        #         # Use fixed normalization params from environment
+        #         obs_mean, obs_std = env_instance.obs_mean, env_instance.obs_std
+        #         self.obs_rms = None  # No running stats needed
+        #         print("Using fixed observation normalization from environment.")
+        #     else:
+        #         # Use running mean/std that will be updated during training
+        #         self.obs_rms = RunningMeanStd(shape=(obs_dim,))
+        #         obs_mean, obs_std = self.obs_rms.mean, self.obs_rms.std
+        #         print("Using running observation normalization (will update during training).")
+        #
+        #     with torch.no_grad():
+        #         policy.obs_mean = torch.tensor(obs_mean, dtype=torch.float32)
+        #         policy.obs_std = torch.tensor(obs_std, dtype=torch.float32)
+        #         critic.obs_mean = policy.obs_mean
+        #         critic.obs_std = policy.obs_std
         
         # ----------------------- Device setup (from args or auto-detect)  ----------------------- #
         device_arg = getattr(args, "device", "auto")
@@ -116,6 +117,11 @@ class Training:
                 # Move stds if it's a plain tensor (not nn.Parameter)
                 if not isinstance(policy.stds, torch.nn.Parameter):
                     policy.stds = policy.stds.to(self.device)
+        
+        base_policy = None
+        if args.imitate:
+            base_policy = torch.load(args.imitate, weights_only=False)
+        
         self.old_policy = deepcopy(policy)
         self.policy = policy
         self.critic = critic
@@ -123,16 +129,89 @@ class Training:
         # Store env_fn for later use
         self.env_fn = env_fn
         
+        # Create persistent worker actors - this is the key optimization.
+        # Each worker creates its environment ONCE and reuses it across all iterations,
+        # avoiding expensive MuJoCo model recompilation.
+        # Workers always use CPU (they do single-sample inference, no batching benefit)
+        print(f"Creating {self.n_proc} persistent rollout workers...")
+        
+        # Create CPU copies for workers (deepcopy to avoid reference issues)
+        if self.device.type == "cuda":
+            # Networks are on GPU, need CPU copies for workers
+            policy_cpu = deepcopy(self.policy).cpu()
+            critic_cpu = deepcopy(self.critic).cpu()
+            # Move non-parameter tensors to CPU
+            policy_cpu.obs_mean = policy_cpu.obs_mean.cpu()
+            policy_cpu.obs_std = policy_cpu.obs_std.cpu()
+            critic_cpu.obs_mean = critic_cpu.obs_mean.cpu()
+            critic_cpu.obs_std = critic_cpu.obs_std.cpu()
+            if not isinstance(policy_cpu.stds, torch.nn.Parameter):
+                policy_cpu.stds = policy_cpu.stds.cpu()
+        else:
+            # Already on CPU
+            policy_cpu = self.policy
+            critic_cpu = self.critic
+        
         self.workers = [
             RolloutWorker.remote(
                 env_fn,
                 policy_cpu,
                 critic_cpu,
-                seed=get_worker_seed(self.seed, i) if self.seed is not None else None,
+                seed=42 + i,
                 worker_id=i,
             )
             for i in range(self.n_proc)
         ]
+        self.actor_optimizer = optim.Adam(self.policy.parameters(), lr=self.lr, eps=self.eps)
+        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=self.lr, eps=self.eps)
+    
+    def _aggregate_results(self, result: list[BatchData]) -> BatchData:
+        """Aggregate results from multiple workers into a single BatchData.
+            聚合数据为训练可用格式
+        Args:
+            result: List of BatchData from worker sample() calls
+
+        Returns:
+            BatchData with concatenated tensors from all workers
+        """
+        
+        # Aggregate trajectory data - handle traj_idx specially for recurrent policies
+        # (indices need to be offset to reference correct positions in concatenated data)
+        states = torch.cat([r.states for r in result])
+        actions = torch.cat([r.actions for r in result])
+        rewards = torch.cat([r.rewards for r in result])
+        values = torch.cat([r.values for r in result])
+        returns = torch.cat([r.returns for r in result])
+        dones = torch.cat([r.dones for r in result])
+        ep_lens = torch.cat([r.ep_lens for r in result])
+        ep_rewards = torch.cat([r.ep_rewards for r in result])
+        
+        # Fix traj_idx: offset each worker's indices by cumulative sample count
+        if self.recurrent:
+            traj_idx_list = []
+            offset = 0
+            for r in result:
+                # Skip the first 0 from subsequent workers (it's redundant)
+                worker_traj_idx = r.traj_idx
+                if offset > 0:
+                    worker_traj_idx = worker_traj_idx[1:]  # Skip leading 0
+                traj_idx_list.append(worker_traj_idx + offset)
+                offset += len(r.states)
+            traj_idx = torch.cat(traj_idx_list)
+        else:
+            traj_idx = torch.cat([r.traj_idx for r in result])
+        
+        return BatchData(
+            states=states,
+            actions=actions,
+            rewards=rewards,
+            values=values,
+            returns=returns,
+            dones=dones,
+            traj_idx=traj_idx,
+            ep_lens=ep_lens,
+            ep_rewards=ep_rewards,
+        )
     
     def sample_parallel_with_workers(self, deterministic=False):
         """sample traj using persistent worker actors
@@ -153,14 +232,14 @@ class Training:
         obs_mean_ref = ray.put(obs_mean_cpu)
         obs_std_ref = ray.put(obs_std_cpu)
         
-        # Sync all state to workers in a single call (weights, normalization, iteration)
+        # 在一个回调中同步所有worker的state(weights, normalization, iteration)
         sync_futures = [
             w.sync_state.remote(policy_ref, critic_ref, obs_mean_ref, obs_std_ref, self.iteration_count)
             for w in self.workers
         ]
         ray.get(sync_futures)
         
-        # Collect samples from all workers in parallel
+        # 所有worker并行采样数据
         sample_futures = [
             w.sample.remote(self.gamma, max_steps, self.max_traj_len, deterministic) for w in self.workers
         ]
@@ -168,25 +247,7 @@ class Training:
         
         return self._aggregate_results(result)
     
-    def make_env_fn(self):
-        # 创建批处理环境
-        n_envs = 8
-        print(f"Creating batch environment with {n_envs} parallel environments...")
-        
-        # 创建多个单独的环境（Stable Baselines3的方式）
-        def make_env(env_id):
-            def _init():
-                from your_project import create_single_quad_env
-                env = create_single_quad_env()
-                env.env_id = env_id
-                return env
-            
-            return _init
-    
     def train(self, env_fn, n_itr):
-        self.actor_optimizer = optim.Adam(self.policy.parameters(), lr=self.lr, eps=self.eps)
-        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=self.lr, eps=self.eps)
-        
         train_start_time = time.time()
         obs_mirr, act_mirr = None, None
         
@@ -284,116 +345,43 @@ class Training:
                 # ----------------------- data vis(system) ----------------------- #
                 
                 # ----------------------- eval interval ----------------------- #
-                if itr == 0 or (itr + 1) % self.eval_freq == 0:
-                    nets = {"actor": self.policy, "critic": self.critic}
-                    
-                    evaluate_start = time.time()
-                    eval_batches = self.evaluate(env_fn, nets, itr)
-                    eval_time = time.time() - evaluate_start
-                    
-                    eval_ep_lens = [float(i) for b in eval_batches for i in b.ep_lens]
-                    eval_ep_rewards = [float(i) for b in eval_batches for i in b.ep_rewards]
-                    avg_eval_ep_lens = np.mean(eval_ep_lens)
-                    avg_eval_ep_rewards = np.mean(eval_ep_rewards)
-                    print("====EVALUATE EPISODE====")
-                    print(
-                        f"(Episode length:{avg_eval_ep_lens:.3f}. Reward:{avg_eval_ep_rewards:.3f}. "
-                        f"Time taken:{eval_time:.2f}s)"
-                    )
-                    
-                    # tensorboard logging for evaluation
-                    self.logger.log_eval_metrics(avg_eval_ep_rewards, avg_eval_ep_lens, itr)
+                # if itr == 0 or (itr + 1) % self.eval_freq == 0:
+                #     nets = {"actor": self.policy, "critic": self.critic}
+                #
+                #     evaluate_start = time.time()
+                #     eval_batches = self.evaluate(env_fn, nets, itr)
+                #     eval_time = time.time() - evaluate_start
+                #
+                #     eval_ep_lens = [float(i) for b in eval_batches for i in b.ep_lens]
+                #     eval_ep_rewards = [float(i) for b in eval_batches for i in b.ep_rewards]
+                #     avg_eval_ep_lens = np.mean(eval_ep_lens)
+                #     avg_eval_ep_rewards = np.mean(eval_ep_rewards)
+                #     print("====EVALUATE EPISODE====")
+                #     print(
+                #         f"(Episode length:{avg_eval_ep_lens:.3f}. Reward:{avg_eval_ep_rewards:.3f}. "
+                #         f"Time taken:{eval_time:.2f}s)"
+                #     )
+                #
+                #     # tensorboard logging for evaluation
+                #     self.logger.log_eval_metrics(avg_eval_ep_rewards, avg_eval_ep_lens, itr)
                 
                 # ----------------------- data vis(tensorboard) ----------------------- #
     
-    def eval(self):
+    def evaluate(self, env_fn, nets, itr):
         ...
 
 
 if __name__ == '__main__':
-    Trainer = Training()
+    def create_single_env():
+        from envs.config_builder import Configuration
+        with open("../config/Quad_config.yaml", 'r') as f:
+            config_data = yaml.safe_load(f)
+        cfg = Configuration(**config_data)
+        env = QuadEnv("../config/env_config.yaml", cfg)
+        return env
     
     
-    def test():
-        env_config_path = "../config/env_config.yaml"
-        task_config_path = "../config/Task_config.yaml"
-        
-        # =========================== 仿真器 =========================== #
-        XML_loader = XMLModelLoader()
-        env_config = {}
-        if env_config_path:
-            with open(env_config_path, 'r') as f:
-                env_config = yaml.safe_load(f)
-        model = XML_loader.load(env_config.get('model', {}))
-        Mujoco_simulator = MuJoCoSimulator(model)
-        
-        # =========================== 任务 =========================== #
-        # 加载配置
-        task_config = {}
-        if task_config_path:
-            with open(task_config_path, 'r') as f:
-                task_config = yaml.safe_load(f)
-        # 处理配置
-        task = Hover(task_config)
-        # =========================== 环境 =========================== #
-        env = QuadEnv(
-            # observation_space=observation_builder,
-            simulator=Mujoco_simulator,
-            task=task
-        )
-        
-        # =========================== 控制、决策 =========================== #
-        # 控制器配置
-        QuadController = Quadrotor()
-        obs, info = env.reset()
-        print(f"Init Height: {info['qpos'][2]:.3f}m")
-        
-        # =========================== 数据可视化 =========================== #
-        data_log = {
-            'time': [],
-            'pos_x': [], 'pos_y': [], 'pos_z': [],
-            'target_z': [],
-            'reward': [],
-            'actions': []
-        }
-        
-        # =========================== 训练 =========================== #
-        max_steps = int(1000 / QuadController._get_dt())
-        render_fps = 100
-        frame_interval = 1.0 / render_fps if render_fps > 0 else 0
-        with mujoco.viewer.launch_passive(Mujoco_simulator.model, Mujoco_simulator.data) as viewer:
-            for i in range(30):  # 等待3秒
-                viewer.sync()
-                time.sleep(0.1)
-            while viewer.is_running():
-                # 轨迹采集重置 ==============
-                total_reward = 0
-                obs, info = env.reset()
-                done = False
-                for step in range(200000):
-                    frame_start = time.time()
-                    
-                    # 动作选择(控制器 or 强化学习) ==============
-                    # action = np.random.uniform(-1, 1, size=env.model.nu)
-                    action, _ = QuadController._cal_control(obs)
-                    obs, reward, done, _, info = env.step(action)
-                    
-                    # 可视化同步 =============
-                    if viewer is not None:
-                        viewer.sync()
-                        # 控制帧率
-                        elapsed = time.time() - frame_start
-                        if elapsed < frame_interval:
-                            time.sleep(frame_interval - elapsed)
-                    
-                    # 打印数据 =============
-                    if step % 10 == 0:
-                        data_log['time'].append(info['time'])
-                        data_log['pos_z'].append(info['qpos'][2])
-                        data_log['reward'].append(total_reward)
-                        data_log['actions'].append(action.copy())
-                        print(f"pos_z:{info['qpos'][2]:.2f}")
-                        print(f"total_reward:{total_reward:.2f}")
-                        print(f"action:{action.copy()}")
-                        print()
-                    total_reward += reward
+    def make_env_fc():
+        return create_single_env()
+    
+    Training(make_env_fc, None)

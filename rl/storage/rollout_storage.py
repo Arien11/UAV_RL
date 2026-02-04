@@ -72,7 +72,7 @@ class Buffer:
         # Vectorized discounted returns computation
         # Append last_val to rewards for unified computation
         last_val_scalar = last_val.squeeze(0) if last_val.dim() > 0 else last_val
-        extended_rewards = torch.cat([rewards, last_val_scalar.unsqueeze(0)])
+        extended_rewards = torch.cat([rewards, last_val_scalar])
         
         # Compute discount powers: [1, γ, γ², ..., γ^T]
         discount_powers = self.gamma ** torch.arange(T + 1, dtype=rewards.dtype, device=rewards.device)

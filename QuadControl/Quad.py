@@ -162,8 +162,8 @@ class Quadrotor:
         action = np.copy(action)
         
         # === 解算 RL action ===
-        delta_pos = action[:3]  # Δx, Δy, Δz
-        delta_yaw = action[3]  # Δψ
+        delta_pos = action[0, :3]  # Δx, Δy, Δz
+        delta_yaw = action[0, 3]  # Δψ
         
         # === 参考轨迹计算 ===
         ref_pos, ref_heading = self.task.get_reference(self.client.data.time)
