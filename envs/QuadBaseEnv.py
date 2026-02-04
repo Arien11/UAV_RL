@@ -58,10 +58,14 @@ class QuadBaseEnv(MuJoCoSimulator):
     def _get_external_state(self):
         pass
     
-    def get_obs(self):
+    def get_obs(self) -> np.array:
+        """获取完整的观测量"""
         robot_state = self._get_robot_state()
         ext_state = self._get_external_state()
-        state = np.concatenate([robot_state, ext_state])
+        if ext_state is not None:
+            state = np.concatenate([robot_state, ext_state])
+        else:
+            state = robot_state
         # assert state.shape == (self.base_obs_len,), (
         #     f"State vector length expected to be: {self.base_obs_len} but is {len(state)}"
         # )
@@ -120,7 +124,7 @@ class QuadBaseEnv(MuJoCoSimulator):
     
     def reset_model(self):
         """Reset the environment to initial state."""
-        pass
+        return self.get_obs()
     
     def _apply_init_noise(self):
         pass

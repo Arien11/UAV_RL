@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 import numpy as np
-import interface
-
 
 # class ObservationSpaceBuilder(ABC):
 #     """观测空间构建器"""

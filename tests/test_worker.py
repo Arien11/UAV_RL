@@ -68,7 +68,7 @@ def mock_env_fn():
 class MockPolicyNetwork(torch.nn.Module):
     """模拟策略网络"""
     
-    def __init__(self, state_dim=4, action_dim=2):
+    def __init__(self, state_dim=13, action_dim=4):
         super().__init__()
         self.state_dim = state_dim
         self.action_dim = action_dim
@@ -107,7 +107,7 @@ class MockPolicyNetwork(torch.nn.Module):
 class MockCriticNetwork(torch.nn.Module):
     """模拟价值网络"""
     
-    def __init__(self, state_dim=4):
+    def __init__(self, state_dim=13):
         super().__init__()
         self.state_dim = state_dim
         self.fc = torch.nn.Linear(state_dim, 1)
@@ -161,36 +161,11 @@ def test_worker_initialization():
 
 
 def create_single_env():
-    import yaml
-
-    env_config_path = "../config/env_config.yaml"
-    task_config_path = "../config/Task_config.yaml"
-    
-    # =========================== 仿真器 =========================== #
-    XML_loader = XMLModelLoader()
-    env_config = {}
-    if env_config_path:
-        with open(env_config_path, 'r') as f:
-            env_config = yaml.safe_load(f)
-    model = XML_loader.load(env_config.get('model', {}))
-    Mujoco_simulator = MuJoCoSimulator(model)
-    
-    # =========================== 任务 =========================== #
-    # 加载配置
-    task_config = {}
-    if task_config_path:
-        with open(task_config_path, 'r') as f:
-            task_config = yaml.safe_load(f)
-    # 处理配置
-    task = Hover(task_config)
-
-    Quad = Quadrotor()
-    # =========================== 环境 =========================== #
-    env = QuadEnv(
-        # observation_space=observation_builder,
-        simulator=Mujoco_simulator,
-        task=task,
-    )
+    from envs.config_builder import Configuration
+    with open("../config/Quad_config.yaml", 'r') as f:
+        config_data = yaml.safe_load(f)
+    cfg = Configuration(**config_data)
+    env = QuadEnv("../config/env_config.yaml", cfg)
     return env
 
 
@@ -395,4 +370,4 @@ if __name__ == '__main__':
     # test_single_sample()
     # test_performance()
 
-    test_myEnv_init()
+    test_single_sample()

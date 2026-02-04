@@ -2,6 +2,7 @@
 import collections
 import os
 import mujoco
+import numpy as np
 
 
 class RobotInterface:
@@ -18,7 +19,9 @@ class RobotInterface:
         return self.data.qpos.copy()[:3]
     
     def get_quat(self):
-        return self.data.qpos.copy()[3:]
+        qw, qx, qy, qz = self.data.qpos.copy()[3:]
+        quat = np.array([qx, qy, qz, qw])
+        return quat
     
     def get_vel(self):
         return self.data.qvel.copy()[:3]
@@ -34,6 +37,17 @@ class RobotInterface:
     
     def get_orientation(self):
         return 0
+    
+    def get_obs(self):
+        import numpy as np
+        pos = self.get_pos()
+        quat = self.get_quat()
+        vel = self.get_vel()
+        omega = self.get_angular_vel()
+        return np.concatenate([pos, quat, vel, omega])
+    
+    def get_time(self):
+        return self.data.time
     
     def step(self):
         ...

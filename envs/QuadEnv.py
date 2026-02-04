@@ -1,22 +1,19 @@
 import collections
 from typing import Optional
 
-import Observe
+import envs.Observe as Observe
 from Tasks.Hover_Task import *
 from envs.Simulators.MujocoSim import *
-from QuadBaseEnv import QuadBaseEnv
-from interface import RobotInterface
+from envs.QuadBaseEnv import QuadBaseEnv
+from envs.interface import RobotInterface
 from QuadControl.Quad import *
 from envs.config_builder import Configuration
+from Tasks.trace_task import TraceTask
 
 
 # 指定无人机的基类配置
 class QuadEnv(QuadBaseEnv):
     @abstractmethod
-    def _setup_task(self, control_dt: float) -> None:
-        """Setup the task instance. Must set self.task."""
-        pass
-    
     def _setup_robot(self):
         """设置机器人组件"""
         
@@ -28,7 +25,13 @@ class QuadEnv(QuadBaseEnv):
         self._setup_task(control_dt)
         
         # 设置Robot
-        self.robot = Quadrotor()
+        self.robot = Quadrotor(self.task, self.interface)
+    
+    def _setup_task(self, control_dt: float) -> None:
+        """Setup the task instance. Must set self.task."""
+        self.task = TraceTask(self.interface)
+        self.task.setup()
+        pass
     
     def _setup_spaces(self):
         """设置动作空间与观测空间"""
@@ -79,7 +82,7 @@ class QuadEnv(QuadBaseEnv):
     @staticmethod
     def _get_robot_state_len():
         """Return length of UAV state vector
-        Px, Py, Pz, Vx, Vy, Vz, Wx, Wy, Wz, q1, q2, q3, q4,
+        Px, Py, Pz, Vx, Vy, Vz, Wx, Wy, Wz, qx, qy, qz, qw,
         """
         return 13
     
@@ -96,4 +99,7 @@ if __name__ == '__main__':
         config_data = yaml.safe_load(f)
     cfg = Configuration(**config_data)
     temp = QuadEnv("../config/env_config.yaml", cfg)
+    action = np.array([0.1, 0.1, 0.1, 0])
+    obs = temp.interface.get_obs()
+    temp.robot.step(action)
     print()

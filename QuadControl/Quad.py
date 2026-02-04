@@ -4,10 +4,10 @@ from QuadControl.utils.motor_mixer import *
 
 
 class Quadrotor:
-    def __init__(self):
-        self.task = None
+    def __init__(self, task=None, client=None):
+        self.task = task
         self.iteration_count = 0
-        
+        self.client = client
         # 物理参数
         self.gravity = 9.8066  # 重力加速度 单位m/s^2
         self.mass = 0.033  # 飞行器质量 单位kg
@@ -102,9 +102,10 @@ class Quadrotor:
         # ================== 关键：构建目标状态(轨迹输入部分) ================== #
         if goal is None:
             # 使用默认目标
-            goal_pos = np.array([0.0, 0.0, 0.6])
+            goal_pos = np.array([0.0, 0.0, 0.3])
             goal_heading = np.array([1.0, 0.0, 0.0])
-        
+        goal_pos = goal[0]
+        goal_heading = goal[1]
         goal_vel = np.array([0, 0, 0])
         goal_quat = np.array([0.0, 0.0, 0.0, 1.0])
         goal_omega = np.array([0, 0, 0])
@@ -147,7 +148,8 @@ class Quadrotor:
     def _get_dt(self):
         return self.dt
     
-    def _do_simulation(self, target, n_frames):
+    def _do_simulation(self, target, n_frames=5):
+        """机器人与仿真器环境的交互"""
         ...
     
     def step(self, action, offset=None):
@@ -158,17 +160,17 @@ class Quadrotor:
             raise TypeError("Expected action to be a numpy array")
         
         action = np.copy(action)
-
-        # === 1. 解析 RL action（轨迹残差） ===
+        
+        # === 解算 RL action ===
         delta_pos = action[:3]  # Δx, Δy, Δz
         delta_yaw = action[3]  # Δψ
-
-        # === 2. 当前时间的参考轨迹 ===
-        ref_pos, ref_heading = self.task.get_reference(self.time)
-
-        # === 3. 构造 goal ===
+        
+        # === 参考轨迹计算 ===
+        ref_pos, ref_heading = self.task.get_reference(self.client.data.time)
+        
+        # === 期望量计算 ===
         goal_pos = ref_pos + delta_pos
-
+        
         ref_yaw = np.arctan2(ref_heading[1], ref_heading[0])
         goal_yaw = ref_yaw + delta_yaw
         goal_heading = np.array([
@@ -176,82 +178,24 @@ class Quadrotor:
             np.sin(goal_yaw),
             0.0
         ])
-
-        # === 4. 用 SE3 控制器算电机 ===
-        obs = self._get_obs()
-        motor_inputs, _ = self.controller._cal_control(
+        
+        # === 期望输入给到robot控制器 ===
+        obs = self.client.get_obs()
+        motor_inputs, _ = self._cal_control(
             obs=obs,
             goal=(goal_pos, goal_heading),
-            time=self.time
         )
-
-        # === 5. 真正推进物理仿真 ===
-        self._do_simulation(motor_inputs, self.frame_skip)
-
-        # === 6. task 逻辑保持不变 ===
+        
+        # === 与仿真器交互 ===
+        # self._do_simulation(motor_inputs, self.frame_skip)
+        
+        # === task计算reward ===
         self.task.step()
         rewards = self.task.calc_reward(action)
         done = self.task.done()
+        return rewards, done
+
 
 if __name__ == '__main__':
-    def simple_trajectory(time):
-        """简易轨迹生成器"""
-        wait_time = 1.5
-        height = 0.3
-        radius = 0.5
-        speed = 0.3
-        
-        if time < wait_time:
-            return np.array([radius, 0, height]), np.array([0.0, 1.0, 0.0])
-        
-        _cos = np.cos(2 * np.pi * speed * (time - wait_time))
-        _sin = np.sin(2 * np.pi * speed * (time - wait_time))
-        _heading = np.array([-_sin, _cos, 0])
-        _pos = np.array([radius * _cos, radius * _sin, height])
-        
-        return _pos, _heading
+    ...
     
-    
-    def test_quadrotor_basic():
-        """测试Quadrotor类的基础功能"""
-        print("=== Quadrotor类基础功能测试 ===")
-        
-        # 1. 创建四旋翼对象
-        quad = Quadrotor()
-        print(f"1. 成功创建Quadrotor对象")
-        print(f"   质量: {quad.mass} kg")
-        print(f"   重力: {quad.gravity} m/s²")
-        print(f"   最大推力: {quad.max_thrust} N")
-        
-        # 模拟当前状态
-        curr_pos = np.array([0.0, 0.0, 0.1])  # 当前位置
-        curr_vel = np.array([0.0, 0.0, 0.0])  # 当前速度
-        curr_quat = np.array([0.0, 0.0, 0.0, 1.0])  # 当前姿态（无旋转）
-        curr_omega = np.array([0.0, 0.0, 0.0])  # 当前角速度
-        
-        # 目标状态
-        goal_pos = np.array([0.0, 0.0, 0.3])  # 目标高度0.3m
-        goal_heading = np.array([1.0, 0.0, 0.0])  # 朝向X轴
-        # obs =
-        # try:
-        #     # 计算控制信号
-        #     motor_inputs, control_info = quad._cal_control(
-        #         curr_pos=curr_pos,
-        #         curr_vel=curr_vel,
-        #         curr_quat=curr_quat,
-        #         curr_omega=curr_omega,
-        #         goal_pos=goal_pos,
-        #         goal_heading=goal_heading
-        #     )
-        #
-        #     print(f"   电机输入: {motor_inputs}")
-        #     print(f"   推力: {control_info['thrust']:.4f}")
-        #     print(f"   扭矩: {control_info['torque']}")
-        #     print(f"   电机转速: {control_info['motor_speed']}")
-        #     print(f"   目标位置: {control_info['goal_pos']}")
-        #
-        # except Exception as e:
-        #     print(f"   控制计算失败: {e}")
-    
-    
-    test_quadrotor_basic()
