@@ -15,131 +15,51 @@ import mujoco.viewer as viewer
 
 from rl.workers.rolloutworker import RolloutWorker
 from rl.storage.rollout_storage import BatchData
+from rl.algos.ppo import PPO
 
 
 class Training:
-    def __init__(self, env_fn, args, seed=None):
-        self.seed = seed
-        self.gamma = args.gamma
-        self.lr = args.lr
+    def __init__(self, env_fn, algo, args=None, seed=None):
         
+        self.seed = 1
+        self.gamma = 0.99
         # ----------------------- train param ----------------------- #
-        self.eps = args.eps
-        self.ent_coeff = args.entropy_coeff
-        self.clip = args.clip
-        self.minibatch_size = args.minibatch_size
-        self.epochs = args.epochs
-        self.max_traj_len = args.max_traj_len
-        self.n_proc = args.num_procs
-        self.grad_clip = args.max_grad_norm
-        self.mirror_coeff = args.mirror_coeff
-        self.eval_freq = args.eval_freq
-        self.recurrent = args.recurrent
-        self.imitate_coeff = args.imitate_coeff
+        self.lr = 0.01
+        self.eps = 1
+        
+        self.minibatch_size = 10
+        self.epochs = 500
+        self.max_traj_len = 50
+        self.n_proc = 4
+        
+        self.eval_freq = 10
+        self.recurrent = None
         # batch_size depends on number of parallel envs
         self.batch_size = self.n_proc * self.max_traj_len
-        
+
         self.total_steps = 0
         
         # counter for training iterations
         self.iteration_count = 0
         
         # directory for saving model weights
-        self.save_path = Path(args.logdir)
+        # self.save_path = Path(args.logdir)
         
         #  ----------------------- create networks or load up pretrained  ----------------------- #
-        env_instance = env_fn()  # single env instance for initialization queries
-        obs_dim = env_instance.observation_space.shape[0]
-        action_dim = env_instance.action_space.shape[0]
-        if args.continued:
-            path_to_actor = args.continued
-            path_to_critic = Path(args.continued.parent, "critic" + str(args.continued).split("actor")[1])
-            policy = torch.load(path_to_actor, weights_only=False)
-            critic = torch.load(path_to_critic, weights_only=False)
-            # policy action noise parameters are initialized from scratch and not loaded
-            if args.learn_std:
-                policy.stds = torch.nn.Parameter(args.std_dev * torch.ones(action_dim))
-            else:
-                policy.stds = args.std_dev * torch.ones(action_dim)
-            print("Loaded (pre-trained) actor from: ", path_to_actor)
-            print("Loaded (pre-trained) critic from: ", path_to_critic)
-            # Pretrained models already have obs normalization embedded
-            self.obs_rms = None
-        # else:
-        #     if args.recurrent:
-        #         policy = Gaussian_LSTM_Actor(obs_dim, action_dim, init_std=args.std_dev, learn_std=args.learn_std)
-        #         critic = LSTM_V(obs_dim)
-        #     else:
-        #         policy = Gaussian_FF_Actor(
-        #             obs_dim, action_dim, init_std=args.std_dev, learn_std=args.learn_std, bounded=False
-        #         )
-        #         critic = FF_V(obs_dim)
-        #
-        #     # Setup observation normalization (reuse env_instance from above)
-        #     if hasattr(env_instance, "obs_mean") and hasattr(env_instance, "obs_std"):
-        #         # Use fixed normalization params from environment
-        #         obs_mean, obs_std = env_instance.obs_mean, env_instance.obs_std
-        #         self.obs_rms = None  # No running stats needed
-        #         print("Using fixed observation normalization from environment.")
-        #     else:
-        #         # Use running mean/std that will be updated during training
-        #         self.obs_rms = RunningMeanStd(shape=(obs_dim,))
-        #         obs_mean, obs_std = self.obs_rms.mean, self.obs_rms.std
-        #         print("Using running observation normalization (will update during training).")
-        #
-        #     with torch.no_grad():
-        #         policy.obs_mean = torch.tensor(obs_mean, dtype=torch.float32)
-        #         policy.obs_std = torch.tensor(obs_std, dtype=torch.float32)
-        #         critic.obs_mean = policy.obs_mean
-        #         critic.obs_std = policy.obs_std
+        self.algo = algo
         
         # ----------------------- Device setup (from args or auto-detect)  ----------------------- #
-        device_arg = getattr(args, "device", "auto")
-        if device_arg == "auto":
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        else:
-            self.device = torch.device(device_arg)
-        
-        if self.device.type == "cuda":
-            if not torch.cuda.is_available():
-                print("Warning: CUDA requested but not available, falling back to CPU")
-                self.device = torch.device("cpu")
-            else:
-                print(f"GPU detected: {torch.cuda.get_device_name(0)}")
-                print("Moving policy and critic to GPU...")
-                policy = policy.to(self.device)
-                critic = critic.to(self.device)
-                # Also move non-parameter tensors to GPU
-                policy.obs_mean = policy.obs_mean.to(self.device)
-                policy.obs_std = policy.obs_std.to(self.device)
-                critic.obs_mean = critic.obs_mean.to(self.device)
-                critic.obs_std = critic.obs_std.to(self.device)
-                # Move stds if it's a plain tensor (not nn.Parameter)
-                if not isinstance(policy.stds, torch.nn.Parameter):
-                    policy.stds = policy.stds.to(self.device)
-        
-        base_policy = None
-        if args.imitate:
-            base_policy = torch.load(args.imitate, weights_only=False)
-        
-        self.old_policy = deepcopy(policy)
-        self.policy = policy
-        self.critic = critic
-        self.base_policy = base_policy
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         # Store env_fn for later use
         self.env_fn = env_fn
         
-        # Create persistent worker actors - this is the key optimization.
-        # Each worker creates its environment ONCE and reuses it across all iterations,
-        # avoiding expensive MuJoCo model recompilation.
-        # Workers always use CPU (they do single-sample inference, no batching benefit)
         print(f"Creating {self.n_proc} persistent rollout workers...")
         
         # Create CPU copies for workers (deepcopy to avoid reference issues)
         if self.device.type == "cuda":
             # Networks are on GPU, need CPU copies for workers
-            policy_cpu = deepcopy(self.policy).cpu()
-            critic_cpu = deepcopy(self.critic).cpu()
+            policy_cpu = deepcopy(algo.policy).cpu()
+            critic_cpu = deepcopy(algo.critic).cpu()
             # Move non-parameter tensors to CPU
             policy_cpu.obs_mean = policy_cpu.obs_mean.cpu()
             policy_cpu.obs_std = policy_cpu.obs_std.cpu()
@@ -149,23 +69,23 @@ class Training:
                 policy_cpu.stds = policy_cpu.stds.cpu()
         else:
             # Already on CPU
-            policy_cpu = self.policy
-            critic_cpu = self.critic
+            policy_cpu = algo.policy
+            critic_cpu = algo.critic
         
         self.workers = [
             RolloutWorker.remote(
                 env_fn,
                 policy_cpu,
                 critic_cpu,
-                seed=42 + i,
+                seed=self.seed + i,
                 worker_id=i,
             )
             for i in range(self.n_proc)
         ]
-        self.actor_optimizer = optim.Adam(self.policy.parameters(), lr=self.lr, eps=self.eps)
-        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=self.lr, eps=self.eps)
-    
-    def _aggregate_results(self, result: list[BatchData]) -> BatchData:
+        self.actor_optimizer = optim.Adam(algo.policy.parameters(), lr=self.lr, eps=self.eps)
+        self.critic_optimizer = optim.Adam(algo.critic.parameters(), lr=self.lr, eps=self.eps)
+        
+    def _aggregate_results(self, result) -> BatchData:
         """Aggregate results from multiple workers into a single BatchData.
             聚合数据为训练可用格式
         Args:
@@ -220,10 +140,10 @@ class Training:
         
         # Get state dicts and obs normalization, move to CPU for workers
         # (Workers always run on CPU, even if main process is on GPU)
-        policy_state_dict = {k: v.cpu() for k, v in self.policy.state_dict().items()}
-        critic_state_dict = {k: v.cpu() for k, v in self.critic.state_dict().items()}
-        obs_mean_cpu = self.policy.obs_mean.cpu()
-        obs_std_cpu = self.policy.obs_std.cpu()
+        policy_state_dict = {k: v.cpu() for k, v in self.algo.policy.state_dict().items()}
+        critic_state_dict = {k: v.cpu() for k, v in self.algo.critic.state_dict().items()}
+        obs_mean_cpu = self.algo.policy.obs_mean.cpu()
+        obs_std_cpu = self.algo.policy.obs_std.cpu()
         
         # Use ray.put() to store in object store once, avoiding redundant
         # serialization when broadcasting to multiple workers
@@ -241,32 +161,32 @@ class Training:
         
         # 所有worker并行采样数据
         sample_futures = [
-            w.sample.remote(self.gamma, max_steps, self.max_traj_len, deterministic) for w in self.workers
+            w.sample.remote(self.gamma, 500, self.max_traj_len, deterministic) for w in self.workers
         ]
         result = ray.get(sample_futures)
         
         return self._aggregate_results(result)
     
-    def train(self, env_fn, n_itr):
+    def train(self, n_itr):
         train_start_time = time.time()
         obs_mirr, act_mirr = None, None
-        
         # =========================== warmup =========================== #
         
-        # =========================== training proc =========================== #
+        # =========================== training process(A2C) =========================== #
         for itr in range(n_itr):
             print(f"********** Iteration {itr} ************")
             
-            self.policy.train()
-            self.critic.train()
+            self.algo.policy.train()
+            self.algo.critic.train()
             
             # set iteration count (could be used for curriculum training)
             self.iteration_count = itr
             
             sample_start_time = time.time()
-            # ----------------------- sample parallel & process ----------------------- #
+            # ----------------------- sample parallel (worker process) ----------------------- #
             batch = self.sample_parallel_with_workers()
             
+            # ----------------------- master process ----------------------- #
             # Move batch to device for training
             observations = batch.states.float().to(self.device)
             actions = batch.actions.float().to(self.device)
@@ -277,7 +197,7 @@ class Training:
             sample_time = time.time() - sample_start_time
             print(f"Sampling took {sample_time:.2f}s for {num_samples} steps.")
             
-            # Normalize advantage (on device)
+            # 归一化优势函数 (on device)
             advantages = returns - values
             advantages = (advantages - advantages.mean()) / (advantages.std() + self.eps)
             
@@ -312,7 +232,7 @@ class Training:
                     advantage_batch = advantages[indices]
                     mask = 1
                     
-                    scalars = self.update_actor_critic(
+                    scalars = self.algo.update_actor_critic(
                         obs_batch,
                         action_batch,
                         return_batch,
@@ -374,14 +294,17 @@ class Training:
 if __name__ == '__main__':
     def create_single_env():
         from envs.config_builder import Configuration
-        with open("../config/Quad_config.yaml", 'r') as f:
+        with open("E:\\UAV_RL\config\Quad_config.yaml", 'r') as f:
             config_data = yaml.safe_load(f)
         cfg = Configuration(**config_data)
-        env = QuadEnv("../config/env_config.yaml", cfg)
+        env = QuadEnv("E:\\UAV_RL\config\env_config.yaml", cfg)
         return env
     
     
     def make_env_fc():
         return create_single_env()
     
-    Training(make_env_fc, None)
+    _ppo = PPO(make_env_fc)
+    train_proc = Training(make_env_fc, _ppo)
+    train_proc.train(5)
+    print()

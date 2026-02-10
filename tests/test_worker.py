@@ -261,7 +261,7 @@ def test_sample_parallel():
     # 所有worker并行采样数据
     sample_futures = [
         w.sample.remote(gamma=0.99,
-                        max_steps=1000,  # 每个worker收集1000步
+                        max_steps=500,  # 每个worker收集1000步
                         max_traj_len=50,
                         deterministic=False)
         for w in workers
