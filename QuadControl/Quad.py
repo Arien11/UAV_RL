@@ -19,6 +19,7 @@ class Quadrotor:
         self.max_thrust = 0.1573  # 单个电机最大推力 单位N
         self.max_torque = 3.842e-03  # 单个电机最大扭矩 单位Nm
         
+        self.motor_names = ['motor1', 'motor2', 'motor3', 'motor4']
         # ======================== controller ======================== #
         # 1.SE3控制器
         self.ctrl = SE3Controller()
@@ -148,10 +149,6 @@ class Quadrotor:
     def _get_dt(self):
         return self.dt
     
-    def _do_simulation(self, target, n_frames=5):
-        """机器人与仿真器环境的交互"""
-        ...
-    
     def step(self, action, offset=None):
         if not isinstance(action, np.ndarray):
             raise TypeError("Expected action to be a numpy array")
@@ -162,8 +159,8 @@ class Quadrotor:
         action = np.copy(action)
         
         # === 解算 RL action ===
-        delta_pos = action[0, :3]  # Δx, Δy, Δz
-        delta_yaw = action[0, 3]  # Δψ
+        delta_pos = action[:3]  # Δx, Δy, Δz
+        delta_yaw = action[3]  # Δψ
         
         # === 参考轨迹计算 ===
         ref_pos, ref_heading = self.task.get_reference(self.client.data.time)
@@ -185,17 +182,4 @@ class Quadrotor:
             obs=obs,
             goal=(goal_pos, goal_heading),
         )
-        
-        # === 与仿真器交互 ===
-        # self._do_simulation(motor_inputs, self.frame_skip)
-        
-        # === task计算reward ===
-        self.task.step()
-        rewards = self.task.calc_reward(action)
-        done = self.task.done()
-        return rewards, done
-
-
-if __name__ == '__main__':
-    ...
-    
+        return motor_inputs

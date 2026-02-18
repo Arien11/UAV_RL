@@ -1,74 +1,26 @@
 import torch
 import torch.nn as nn
 from rl.network.base import *
+import torch.distributions as D
 
 
-class ActorNetwork(torch.nn.Module):
-    """模拟策略网络"""
+class ScaledTanhNormal(D.TransformedDistribution):
+    def __init__(self, loc, scale, action_scale, action_bias):
+        base_dist = D.Normal(loc, scale)
+        transforms = [
+            D.TanhTransform(),
+            D.AffineTransform(loc=action_bias, scale=action_scale)  # y = bias + scale * x
+        ]
+        super().__init__(base_dist, transforms)
+        self.loc = loc
+        self.scale = scale
     
-    def __init__(self, state_dim=13, action_dim=4):
-        super().__init__()
-        self.state_dim = state_dim
-        self.action_dim = action_dim
-        
-        # 简单的线性策略
-        self.fc = torch.nn.Linear(state_dim, action_dim)
-        
-        # 观察值归一化参数
-        self.obs_mean = torch.zeros(state_dim)
-        self.obs_std = torch.ones(state_dim)
-        
-        # 动作噪声（用于探索）
-        self.stds = torch.nn.Parameter(torch.ones(action_dim) * 0.1)
+    def log_prob(self, value):
+        return super().log_prob(value)
     
-    def forward(self, state, deterministic=False):
-        """前向传播"""
-        # 确保输入是2D张量 [batch_size, state_dim]
-        if state.dim() == 1:
-            state = state.unsqueeze(0)  # [state_dim] -> [1, state_dim]
-        
-        # 简单的归一化
-        state_normalized = (state - self.obs_mean) / (self.obs_std + 1e-8)
-        
-        # 计算网络输出
-        output = self.fc(state_normalized)
-        
-        if deterministic:
-            # 确定性策略：直接输出网络输出
-            return output
-        else:
-            # 随机策略：添加噪声
-            noise = torch.randn_like(output) * self.stds
-            return output + noise
-    
-    def init_hidden_state(self):
-        """初始化隐藏状态（用于循环网络）"""
-        pass
-
-
-class CriticNetwork(torch.nn.Module):
-    """模拟价值网络"""
-    
-    def __init__(self, state_dim=13):
-        super().__init__()
-        self.state_dim = state_dim
-        self.fc = torch.nn.Linear(state_dim, 1)
-        
-        # 观察值归一化参数
-        self.obs_mean = torch.zeros(state_dim)
-        self.obs_std = torch.ones(state_dim)
-    
-    def forward(self, state):
-        """前向传播"""
-        # 确保输入是2D张量 [batch_size, state_dim]
-        if state.dim() == 1:
-            state = state.unsqueeze(0)  # [state_dim] -> [1, state_dim]
-        state_normalized = (state - self.obs_mean) / (self.obs_std + 1e-8)
-        return self.fc(state_normalized)
-    
-    def init_hidden_state(self):
-        """初始化隐藏状态"""
-        pass
+    def entropy(self):
+        # Entropy of transformed distribution (can approximate with base entropy)
+        return self.base_dist.entropy() + torch.log(self.transforms[-1].scale).sum()
 
 
 class Actor(Net):
@@ -86,12 +38,13 @@ class FF_Actor(Actor):
             action_dim,
             layers=(256, 256),
             nonlinearity=torch.nn.functional.relu,  # 激活函数默认为relu
-            init_std=0.2,  # 初始标准差
+            init_std=0.5,  # 初始标准差
             learn_std=False,  # 是否学习标准差（可训练参数）
             bounded=False,  # 是否限制动作范围（如使用tanh）
             normc_init=True,  # 是否使用归一化列初始化（稳定训练）
     ):
         super().__init__()
+        
         # 网络层构建(均值参数)
         self.actor_layers = nn.ModuleList()
         self.actor_layers += [nn.Linear(state_dim, layers[0])]
@@ -115,42 +68,62 @@ class FF_Actor(Actor):
         
         self.bounded = bounded
         
+        # 动作边界映射
+        self.action_scale = None
+        self.action_bias = None
+        
         self.normc_init = normc_init
         self.init_parameters(self.means)
     
+    def set_action_range(self, low, high, device):
+        """设置动作的实际范围，并计算 scale 和 bias"""
+        self.action_scale = torch.as_tensor((high - low) / 2, dtype=torch.float32, device=device)
+        self.action_bias = torch.as_tensor((high + low) / 2, dtype=torch.float32, device=device)
+    
     def _get_dist_params(self, state):
+        if torch.isnan(state).any():
+            print("Input state contains NaN!")
         state = (state - self.obs_mean) / self.obs_std
-        
+        state = torch.clamp(state, -10.0, 10.0)  # 限制输入范围
+ 
         # 输出均值mean
         x = state
-        for layer in self.actor_layers:
-            x = self.nonlinearity(layer(x))
+        for i, layer in enumerate(self.actor_layers):
+            x = layer(x)
+            x = self.nonlinearity(x)
+
         mean = self.means(x)
-        
-        if self.bounded:
-            mean = torch.tanh(mean)
-        
+        if torch.isnan(mean).any():
+            print("NaN in mean!")
+            # 可以暂时用 0 替换，但最好找出原因
+            mean = torch.nan_to_num(mean, nan=0.0)
         # 输出标准差std
-        sd = torch.zeros_like(mean)
-        if hasattr(self, "stds"):
-            sd = self.stds
+        sd = self.stds
         return mean, sd
-    
+
     def forward(self, state, deterministic=True):
-        mu, sd = self._get_dist_params(state)
-        
-        # 根据输出的概率分布参数得到对应的动作
-        if not deterministic:
-            action = torch.distributions.Normal(mu, sd).sample()
-        else:
-            action = mu
-        
-        return action
+        mu, sd = self._get_dist_params(state)  # mu 无界
     
+        if not deterministic:
+            dist = self.distribution(state)  # 返回已包含缩放的分布
+            action = dist.sample()  # 直接得到最终动作
+        else:
+            if self.bounded:
+                action = torch.tanh(mu) * self.action_scale + self.action_bias
+            else:
+                action = mu
+        return action
+
     def distribution(self, inputs):
-        # 得到动作属于的概率分布
         mu, sd = self._get_dist_params(inputs)
-        return torch.distributions.Normal(mu, sd)
+        if self.bounded:
+            # Ensure action_scale and action_bias are on same device as mu
+            device = mu.device
+            action_scale = self.action_scale.to(device)
+            action_bias = self.action_bias.to(device)
+            return ScaledTanhNormal(mu, sd, action_scale, action_bias)
+        else:
+            return D.Normal(mu, sd)
 
 
 class Temp_Actor(Actor):

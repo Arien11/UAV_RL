@@ -50,6 +50,45 @@ class Buffer:
         self.dones[self.ptr] = done
         self.ptr += 1
     
+    def compute_gae(self, last_val, gamma, lam):
+        """Compute GAE advantages and returns, and store in self.returns.
+
+        Args:
+            last_val: Bootstrap value (critic(next_state) if truncated, 0 if done)
+            gamma: Discount factor
+            lam: GAE lambda parameter
+        """
+        # 记录当前轨迹的结束位置
+        self.traj_idx += [self.ptr]
+        traj_start = self.traj_idx[-2]
+        traj_end = self.traj_idx[-1]
+
+        # 轨迹长度为零则直接返回
+        if traj_end - traj_start == 0:
+            return
+
+        rewards = self.rewards[traj_start:traj_end, 0]  # shape (T,)
+        values = self.values[traj_start:traj_end, 0]  # shape (T,)
+
+        # 将 last_val 展平为标量（去除所有维度），然后扩展为一维张量 [1]
+        last_val_scalar = last_val.squeeze()  # 若 last_val 形状为 (1,) 或 (1,1)，squeeze() 后变为标量
+        values_extended = torch.cat([values, last_val_scalar.unsqueeze(0)])  # shape (T+1,)
+
+        # Compute TD residuals (deltas)
+        deltas = rewards + gamma * values_extended[1:] - values_extended[:-1]
+        
+        # Compute GAE advantages by backward accumulation
+        advantage = 0.0
+        advantages = []
+        for delta in deltas.flip(0):
+            advantage = delta + gamma * lam * advantage
+            advantages.append(advantage)
+        advantages = torch.stack(advantages[::-1])  # 恢复原始顺序
+        
+        # GAE returns = values + advantages
+        gae_returns = values + advantages
+        self.returns[traj_start:traj_end, 0] = gae_returns
+    
     def finish_path(self, last_val=None):
         """Finish a trajectory and compute returns.
 
@@ -61,7 +100,8 @@ class Buffer:
             如果轨迹被截断: last_val = critic(next_state)
         """
         self.traj_idx += [self.ptr]  # 记录新轨迹起始位置
-        rewards = self.rewards[self.traj_idx[-2]: self.traj_idx[-1], 0]  # self.traj_idx[-2]到self.traj_idx[-1]就是刚结束的轨迹的最后一段
+        rewards = self.rewards[self.traj_idx[-2]: self.traj_idx[-1],
+                  0]  # self.traj_idx[-2]到self.traj_idx[-1]就是刚结束的轨迹的最后一段
         T = len(rewards)
         
         if T == 0:
@@ -72,7 +112,8 @@ class Buffer:
         # Vectorized discounted returns computation
         # Append last_val to rewards for unified computation
         last_val_scalar = last_val.squeeze(0) if last_val.dim() > 0 else last_val
-        extended_rewards = torch.cat([rewards, last_val_scalar])
+        # print(last_val_scalar.shape)
+        extended_rewards = torch.cat([rewards, last_val_scalar.unsqueeze(0)])
         
         # Compute discount powers: [1, γ, γ², ..., γ^T]
         discount_powers = self.gamma ** torch.arange(T + 1, dtype=rewards.dtype, device=rewards.device)
@@ -123,7 +164,7 @@ if __name__ == '__main__':
     def test_data_collect():
         # 测试用例1：简单轨迹
         buffer = Buffer(gamma=0.9, size=100)
-    
+        
         # 存储一个3步的轨迹
         for i in range(3):
             buffer.store(
@@ -133,12 +174,12 @@ if __name__ == '__main__':
                 value=torch.tensor([0.0]),
                 done=torch.tensor([0.0])
             )
-    
+        
         # 结束轨迹，假设last_val=0
         buffer.finish_path(last_val=torch.tensor([0.0]))
-    
+        
         data = buffer.get_data()
-    
+        
         # 手动计算预期回报
         # 回报计算公式: return_t = r_t + γ * r_{t+1} + γ^2 * r_{t+2} + ...
         expected_returns = [
@@ -146,15 +187,17 @@ if __name__ == '__main__':
             2.0 + 0.9 * 3.0,  # 2 + 2.7 = 4.7
             3.0  # 3
         ]
-    
+        
         # 验证计算结果
         computed_returns = data.returns.squeeze().tolist()
-    
+        
         print(f"计算得到的回报: {computed_returns}")
         print(f"预期回报: {expected_returns}")
-    
+        
         for i, (computed, expected) in enumerate(zip(computed_returns, expected_returns)):
             assert abs(computed - expected) < 1e-6, f"第{i}步回报计算错误: {computed} != {expected}"
-    
+        
         print("折扣回报计算正确 ✓")
+    
+    
     test_data_collect()

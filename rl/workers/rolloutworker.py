@@ -81,7 +81,7 @@ class RolloutWorker:
         self.env.robot.iteration_count = iteration_count
     
     @torch.no_grad()
-    def sample(self, gamma, max_steps, max_traj_len, deterministic=False):
+    def sample(self, gamma, lam, max_steps, max_traj_len, deterministic=False):
         """Collect trajectory data using the persistent environment.
 
         Collects exactly max_steps timesteps. Episodes may span multiple sample()
@@ -128,7 +128,7 @@ class RolloutWorker:
             while len(memory) < max_steps:
                 action = policy(state, deterministic=deterministic)
                 value = critic(state)
-                
+                # print(action.shape)
                 next_state, reward, done, _ = env.step(action.numpy())
                 reward = torch.as_tensor(reward, dtype=torch.float)
                 
@@ -154,7 +154,8 @@ class RolloutWorker:
                     next_state_tensor = torch.as_tensor(next_state, dtype=torch.float)
                     bootstrap_value = (not done) * critic(next_state_tensor)
                     # 计算轨迹的回报
-                    memory.finish_path(last_val=bootstrap_value)
+                    # memory.finish_path(last_val=bootstrap_value)
+                    memory.compute_gae(last_val=bootstrap_value, gamma=gamma, lam=lam)
                     
                     # Reset for new episode 重置新的episode
                     state = torch.as_tensor(env.reset(), dtype=torch.float)
@@ -173,7 +174,8 @@ class RolloutWorker:
             if not memory.dones[memory.ptr - 1]:
                 # Episode is ongoing - finish path with bootstrap and save state
                 bootstrap_value = critic(state)
-                memory.finish_path(last_val=bootstrap_value)
+                # memory.finish_path(last_val=bootstrap_value)
+                memory.compute_gae(last_val=bootstrap_value, gamma=gamma, lam=lam)
                 self.current_state = state
             else:
                 # Episode ended cleanly, no state to preserve

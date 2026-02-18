@@ -13,32 +13,34 @@ from Tasks.trace_task import TraceTask
 
 # 指定无人机的基类配置
 class QuadEnv(QuadBaseEnv):
-    @abstractmethod
     def _setup_robot(self):
         """设置机器人组件"""
-        
-        control_dt = self.cfg.contorl_dt
+        control_dt = 0.02
         # 设置交互接口interface
         self.interface = RobotInterface(self.model, self.data)
-        
+        self.frame_skip = int(control_dt / self.interface.sim_dt())
         # 设置任务task
         self._setup_task(control_dt)
         
         # 设置Robot
         self.robot = Quadrotor(self.task, self.interface)
+        
+        # 设置初始状态init state
+        self.nominal_pose = [0.0, 0.0, 0.5, 1.0, 0.0, 0.0, 0.0]
     
     def _setup_task(self, control_dt: float) -> None:
         """Setup the task instance. Must set self.task."""
-        self.task = TraceTask(self.interface)
-        self.task.setup()
+        # self.task = TraceTask(self.interface)
+        self.task = HoverTask(self.interface)
+        
+        # self.task.setup()
         pass
     
     def _setup_spaces(self):
         """设置动作空间与观测空间"""
         # 动作空间
-        action_space_size = 4
-        self.action_space = np.zeros(action_space_size)
-        self.prev_prediction = np.zeros(action_space_size)
+        self.action_space = self.task.action_space
+        self.prev_prediction = self.task.action_space
         
         # 观测空间
         self.base_obs_len = self._get_robot_state_len() + self._get_num_external_obs()  # 机器人状态 + 外部观测
@@ -79,6 +81,45 @@ class QuadEnv(QuadBaseEnv):
         self.obs_mean = np.tile(self.obs_mean, self.history_len)
         self.obs_std = np.tile(self.obs_std, self.history_len)
     
+    def _do_simulation(self, ctrl_cmds, n_frames):
+        for _ in range(n_frames):
+            for i, motor_name in enumerate(self.robot.motor_names):
+                self.data.actuator(motor_name).ctrl[0] = ctrl_cmds[i]
+            mujoco.mj_step(self.model, self.data, 1)
+        
+        # 每 100 步打印高度（需能从环境访问 task）
+        # if hasattr(self, 'task'):
+        #     h = self.task.client.get_pos()[2]
+        #     print(f"[CALIB] thrust={ctrl_cmds[0]:.3f}, height={h:.3f}")
+    
+    def step(self, action):
+        # Get offsets from nominal pose
+        # offsets = self._get_action_offsets()
+        ctrl_cmds = self.task.interpret_action_e2e(action)
+        # === task计算reward ===
+        self.task.step()
+        rewards = self.task.calc_reward(action)
+        done = self.task.done()
+        total_reward = sum(rewards.values())
+
+        # === robot step ===
+        # sim_input = self.robot.step(action)
+        obs = self.get_obs()
+        self.prev_prediction = action
+        
+        # === 与仿真器交互(端到端就直接给仿真器) ===
+        # self._do_simulation(sim_input, self.frame_skip)
+        self._do_simulation(ctrl_cmds, self.frame_skip)
+        # print(f"[DEBUG] raw action: {action}, motor_cmds: {ctrl_cmds}")
+        # 域随机化
+        # if self.dynrand_interval > 0 and np.random.randint(self.dynrand_interval) == 0:
+        #     self._randomize_dynamics()
+        #
+        # if self.perturb_interval > 0 and np.random.randint(self.perturb_interval) == 0:
+        #     self._apply_perturbation()
+        
+        return obs, total_reward, done, rewards
+    
     @staticmethod
     def _get_robot_state_len():
         """Return length of UAV state vector
@@ -92,14 +133,3 @@ class QuadEnv(QuadBaseEnv):
         Px, Py, Pz, Vx, Vy, Vz, Wx, Wy, Wz, q1, q2, q3, q4,
         """
         return 0
-
-
-if __name__ == '__main__':
-    with open("../config/Quad_config.yaml", 'r') as f:
-        config_data = yaml.safe_load(f)
-    cfg = Configuration(**config_data)
-    temp = QuadEnv("../config/env_config.yaml", cfg)
-    action = np.array([0.1, 0.1, 0.1, 0])
-    obs = temp.interface.get_obs()
-    temp.robot.step(action)
-    print()

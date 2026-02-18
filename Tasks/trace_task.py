@@ -99,3 +99,6 @@ class TraceTask(BaseTask):
             return True
         
         return False
+    
+    def reset(self, iter_count):
+        pass

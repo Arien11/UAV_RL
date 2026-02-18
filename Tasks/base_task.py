@@ -1,4 +1,18 @@
 from abc import ABC, abstractmethod
+import numpy as np
+
+
+class ActionSpace:
+    def __init__(self, shape, low, high):
+        self.shape = shape
+        self.low = np.array(low, dtype=np.float32)
+        self.high = np.array(high, dtype=np.float32)
+    
+    def sample(self):
+        return np.random.uniform(self.low, self.high).astype(np.float32)
+    
+    def contains(self, x):
+        return np.all(x >= self.low) and np.all(x <= self.high)
 
 
 # =========================== 任务抽象基类 =========================== #
@@ -28,6 +42,10 @@ class BaseTask(ABC):
         pass
     
     @abstractmethod
+    def reset(self, iter_count):
+        pass
+    
+    @abstractmethod
     def calc_reward(self, action):
         """计算任务奖励"""
         pass
@@ -37,22 +55,10 @@ class BaseTask(ABC):
         """获取观测"""
         pass
     
-    def check_termination(self, sim_state, info=None):
-        """检查终止条件"""
-        for condition in self._termination_conditions:
-            if condition(sim_state, info):
-                return True, condition.__name__
-        return False, None
+    def interpret_action_e2e(self, action):
+        """端到端的动作解析"""
+        pass
     
-    def check_truncation(self, sim_state, info=None):
-        """检查截断条件"""
-        for condition in self._truncation_conditions:
-            if condition(sim_state, info):
-                return True, condition.__name__
-        return False, None
-    
-    def add_termination_condition(self, condition):
-        self._termination_conditions.append(condition)
-    
-    def add_truncation_condition(self, condition):
-        self._truncation_conditions.append(condition)
+    def interpret_action_controller(self, action):
+        """动作解析到控制信号"""
+        pass
