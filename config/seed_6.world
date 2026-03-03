@@ -1,0 +1,3800 @@
+
+            <sdf version='1.7'>
+            <world name='default'>
+                <light name='sun' type='directional'>
+                <cast_shadows>1</cast_shadows>
+                <pose>0 0 10 0 -0 0</pose>
+                <diffuse>0.8 0.8 0.8 1</diffuse>
+                <specular>0.2 0.2 0.2 1</specular>
+                <attenuation>
+                    <range>1000</range>
+                    <constant>0.9</constant>
+                    <linear>0.01</linear>
+                    <quadratic>0.001</quadratic>
+                </attenuation>
+                <direction>-0.5 0.1 -0.9</direction>
+                <spot>
+                    <inner_angle>0</inner_angle>
+                    <outer_angle>0</outer_angle>
+                    <falloff>0</falloff>
+                </spot>
+                </light>    
+                <model name='ground_plane'>
+                <static>1</static>
+                <link name='link'>
+                    <collision name='collision'>
+                    <geometry>
+                        <plane>
+                        <normal>0 0 1</normal>
+                        <size>200 200</size>
+                        </plane>
+                    </geometry>
+                    <surface>
+                        <contact>
+                        <collide_bitmask>65535</collide_bitmask>
+                        <ode/>
+                        </contact>
+                        <friction>
+                        <ode>
+                            <mu>100</mu>
+                            <mu2>50</mu2>
+                        </ode>
+                        <torsional>
+                            <ode/>
+                        </torsional>
+                        </friction>
+                        <bounce/>
+                    </surface>
+                    <max_contacts>10</max_contacts>
+                    </collision>
+                    <visual name='visual'>
+                    <cast_shadows>0</cast_shadows>
+                    <geometry>
+                        <plane>
+                        <normal>0 0 1</normal>
+                        <size>200 200</size>
+                        </plane>
+                    </geometry>
+                    <material>
+                        <script>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                        <name>Gazebo/Grey</name>
+                        </script>
+                    </material>
+                    </visual>
+                    <self_collide>0</self_collide>
+                    <enable_wind>0</enable_wind>
+                    <kinematic>0</kinematic>
+                </link>
+                </model>
+                <gravity>0 0 -9.8</gravity>
+                <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+                <atmosphere type='adiabatic'/>
+                <physics type='ode'>
+                <max_step_size>0.001</max_step_size>
+                <real_time_factor>1</real_time_factor>
+                <real_time_update_rate>1000</real_time_update_rate>
+                </physics>
+                <scene>
+                <ambient>0.4 0.4 0.4 1</ambient>
+                <background>0.7 0.7 0.7 1</background>
+                <shadows>1</shadows>
+                </scene>
+                <wind/>
+                <spherical_coordinates>
+                <surface_model>EARTH_WGS84</surface_model>
+                <latitude_deg>0</latitude_deg>
+                <longitude_deg>0</longitude_deg>
+                <elevation>0</elevation>
+                <heading_deg>0</heading_deg>
+                </spherical_coordinates>
+                
+        <model name='box_0'>
+          <static>true</static>
+          <pose>-15.693732802561282 1.9010412841248048 1.3021207821565621 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_1'>
+          <static>true</static>
+          <pose>9.435284253947607 0.3607282399853755 1.7976767826360927 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_2'>
+          <static>true</static>
+          <pose>15.050706208265098 6.475188651410427 1.7665011685202259 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_3'>
+          <static>true</static>
+          <pose>1.6374741721011254 -7.5035165123878045 2.136414688476459 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_4'>
+          <static>true</static>
+          <pose>-9.775437775966598 3.4261886387856073 2.4927592980274222 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 5.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 5.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_5'>
+          <static>true</static>
+          <pose>-3.901099638529079 4.930214343699699 1.567042621839245 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.1</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.1</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_6'>
+          <static>true</static>
+          <pose>8.385144246768085 -8.35082893376583 1.717260542625441 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.4</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.4</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_7'>
+          <static>true</static>
+          <pose>-1.149961410587398 -3.3038791099475295 1.4869277379629757 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_8'>
+          <static>true</static>
+          <pose>15.410563189494866 9.53106040815356 2.01878004290297 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_9'>
+          <static>true</static>
+          <pose>9.675347501960367 6.518665783383671 1.75519581834091 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_10'>
+          <static>true</static>
+          <pose>16.99175059820785 -1.897950852720168 1.49083184343902 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_11'>
+          <static>true</static>
+          <pose>-18.34497994796393 9.174452006319477 1.5645176789630977 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.1</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.1</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_12'>
+          <static>true</static>
+          <pose>4.154662268284227 1.7442738195147065 2.3055341713984867 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_13'>
+          <static>true</static>
+          <pose>-7.383856976449161 7.260608141986836 1.2957606630450136 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_14'>
+          <static>true</static>
+          <pose>11.001397132254333 -6.4118730892092195 1.5954380742907985 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_15'>
+          <static>true</static>
+          <pose>17.535704266663373 5.720117176239265 2.0851721685336777 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.2</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.2</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_16'>
+          <static>true</static>
+          <pose>2.0016474286041976 1.335935426501024 1.2670296802397991 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.5</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.5</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_17'>
+          <static>true</static>
+          <pose>-18.408177678134862 2.6778827294822616 1.6267776214189247 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_18'>
+          <static>true</static>
+          <pose>-17.320881476741317 5.58467907052054 1.4753970393791804 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_19'>
+          <static>true</static>
+          <pose>-0.6598568763868897 2.462999022721501 2.314885577255534 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_20'>
+          <static>true</static>
+          <pose>19.267255549500028 9.373321606308881 1.9838430262510158 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_21'>
+          <static>true</static>
+          <pose>-5.349554603878911 -5.998129897715598 1.4117946340675331 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 2.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 2.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_22'>
+          <static>true</static>
+          <pose>-14.306891463995463 9.029986216593336 1.5827475564926994 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_23'>
+          <static>true</static>
+          <pose>18.5773206442803 3.1205564822901906 2.3535309444533814 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_24'>
+          <static>true</static>
+          <pose>1.9281860284375085 -4.9544511991091955 1.5869351125205744 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_25'>
+          <static>true</static>
+          <pose>-10.334891847796515 -9.624662155377358 2.3940854821781707 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_26'>
+          <static>true</static>
+          <pose>-15.178070919298117 -5.858220049039058 1.7735471317737157 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_27'>
+          <static>true</static>
+          <pose>-19.68421008236153 2.8374367884617406 2.4128040677091307 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_28'>
+          <static>true</static>
+          <pose>5.873173413648921 -6.407207383195566 2.277308977812114 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_29'>
+          <static>true</static>
+          <pose>16.438087854166817 -0.7508817759170032 1.3565845273338146 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_30'>
+          <static>true</static>
+          <pose>-1.9374738062222399 6.321716639206549 1.3022219802854855 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_31'>
+          <static>true</static>
+          <pose>-11.321248463884066 -0.714655532988278 1.610023235543801 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_32'>
+          <static>true</static>
+          <pose>4.472853406482912 7.029900539645439 1.4248793129259325 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 2.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 2.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_33'>
+          <static>true</static>
+          <pose>8.976244354305845 -3.888254920556104 2.04434748982399 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.1</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.1</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_34'>
+          <static>true</static>
+          <pose>-15.202415172383365 6.794662659507182 2.3876265205682365 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_35'>
+          <static>true</static>
+          <pose>-1.6689101174333771 -0.44696366028218293 1.765582517739746 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_36'>
+          <static>true</static>
+          <pose>3.791141431803112 -2.2452676537238965 2.018687643699053 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_37'>
+          <static>true</static>
+          <pose>7.098655124893721 -2.8881180762465135 1.3609228494931693 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_38'>
+          <static>true</static>
+          <pose>5.631250221103311 1.97665094720257 1.6966540770779726 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.4</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.4</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_39'>
+          <static>true</static>
+          <pose>-6.760529323008647 6.018683804761302 1.5469005423583926 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.1</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.1</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_40'>
+          <static>true</static>
+          <pose>4.345088373565211 8.351698227290619 2.173059064849017 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_41'>
+          <static>true</static>
+          <pose>-1.9727804711928307 8.446386999244197 1.3515582533511177 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_42'>
+          <static>true</static>
+          <pose>-2.8641099914187933 7.1854738042553805 1.6404718298055347 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_43'>
+          <static>true</static>
+          <pose>17.526732779220453 -9.22684845062541 1.817390292315322 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_44'>
+          <static>true</static>
+          <pose>10.558222716530867 2.4618016477367206 2.4293268097876597 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 4.9</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 4.9</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_45'>
+          <static>true</static>
+          <pose>1.0927321830077261 6.3478920243861054 2.204699280579846 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.4</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.4</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_46'>
+          <static>true</static>
+          <pose>13.205799517494505 8.317801276837287 1.785955953052779 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_47'>
+          <static>true</static>
+          <pose>-16.601785446528687 8.764641522759074 2.356862795899992 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_48'>
+          <static>true</static>
+          <pose>-19.596600954006078 7.922800407692108 1.5100188059823405 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_49'>
+          <static>true</static>
+          <pose>-9.580787909558811 0.5934310114886454 1.3519264166614793 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_50'>
+          <static>true</static>
+          <pose>-10.99058011233733 -6.332876920785466 1.672757646255286 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_51'>
+          <static>true</static>
+          <pose>-1.9723137954788115 -4.332571210216029 1.673909459743472 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_52'>
+          <static>true</static>
+          <pose>6.798217343340941 -8.794127891689296 1.3471029451879781 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_53'>
+          <static>true</static>
+          <pose>8.359495199088862 8.660598591557179 2.0495216352837318 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.1</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.1</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_54'>
+          <static>true</static>
+          <pose>16.6010224488724 1.5919018879186275 1.8308425893248128 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_55'>
+          <static>true</static>
+          <pose>-13.917800924355209 -6.048339329233481 1.281249746202302 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_56'>
+          <static>true</static>
+          <pose>12.097720196171927 -1.7914208130189824 1.9687893547800224 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 3.9</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 3.9</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_57'>
+          <static>true</static>
+          <pose>19.42379630001276 0.7145464107841999 1.7798561709640297 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_58'>
+          <static>true</static>
+          <pose>14.383747606127933 -3.6944597925401386 1.6610344660559173 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_59'>
+          <static>true</static>
+          <pose>2.286156041978188 2.6676546383961295 2.3624028446304326 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_60'>
+          <static>true</static>
+          <pose>11.884465854400368 6.69021335209451 1.5761862799217907 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_61'>
+          <static>true</static>
+          <pose>-19.098301855714062 4.102299220456159 1.6705926187938518 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_62'>
+          <static>true</static>
+          <pose>-14.642151781865866 -9.152511274803015 1.6656507049397375 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_63'>
+          <static>true</static>
+          <pose>-6.8350867048885 -4.677663422589 1.5209972271922814 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_64'>
+          <static>true</static>
+          <pose>-2.9699520653689113 1.0597293070240692 1.750846045593824 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_65'>
+          <static>true</static>
+          <pose>4.559785438473767 -6.525660019454738 1.3994833442795747 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 2.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 2.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_66'>
+          <static>true</static>
+          <pose>9.027042710524803 2.4890467931223803 1.467444593551424 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 2.9</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 2.9</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_67'>
+          <static>true</static>
+          <pose>7.843491157724166 4.357711136037992 1.9804345137428698 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_68'>
+          <static>true</static>
+          <pose>-3.1929498904135443 2.6838757074767337 1.8319721185870084 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_69'>
+          <static>true</static>
+          <pose>-8.795870464743608 8.72405908389663 1.4729630395441662 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 2.9</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 2.9</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_70'>
+          <static>true</static>
+          <pose>18.206877821373368 6.8305552880880285 1.5637230157694932 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.1</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.1</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_71'>
+          <static>true</static>
+          <pose>3.2886073253509274 5.1126903984498036 2.2612772892453545 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.5</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.5</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_72'>
+          <static>true</static>
+          <pose>18.136325512042433 -6.460939760337199 2.2561977414333363 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.5</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.5</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_73'>
+          <static>true</static>
+          <pose>9.961273315421849 -7.783206143283006 2.2221910999806127 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.4</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.4</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_74'>
+          <static>true</static>
+          <pose>-9.001530488826376 6.974198633915016 1.728503326522644 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.5</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_75'>
+          <static>true</static>
+          <pose>-7.559929930011764 -7.420187723595559 2.3512050250009797 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_76'>
+          <static>true</static>
+          <pose>5.249219970856885 -9.641345203966608 1.5561383368883643 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.1</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.1</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_77'>
+          <static>true</static>
+          <pose>-0.9263325911271707 -1.7792653165331238 1.9629951117122544 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 3.9</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 3.9</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_78'>
+          <static>true</static>
+          <pose>-3.1026827783855246 -7.259072692983346 2.1697435533034986 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_79'>
+          <static>true</static>
+          <pose>-13.430722755179278 7.9912064087477965 1.5132552874328469 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_80'>
+          <static>true</static>
+          <pose>6.843532994399695 -0.6877165910844063 1.5023619847109217 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_81'>
+          <static>true</static>
+          <pose>-5.798767409336731 8.597310220572368 1.3851291635643586 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 2.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 2.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_82'>
+          <static>true</static>
+          <pose>-5.977036666980364 3.6041626208664788 1.3954942858404054 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 2.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 2.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_83'>
+          <static>true</static>
+          <pose>-19.32112132718703 -7.166328616966339 1.3719991754825134 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_84'>
+          <static>true</static>
+          <pose>-3.4314039759266315 -9.526432634611737 1.8528716115264787 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_85'>
+          <static>true</static>
+          <pose>-5.231858211794101 9.859980106281405 2.401472119952705 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_86'>
+          <static>true</static>
+          <pose>-9.585912128171188 -4.639331684046455 1.9503960932806659 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 3.9</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 3.9</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_87'>
+          <static>true</static>
+          <pose>-12.96994618035811 -4.756420934403877 2.433605457311555 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 4.9</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 4.9</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_88'>
+          <static>true</static>
+          <pose>19.05058839694678 -3.769337837614999 2.0291746392822967 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.1</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.1</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_89'>
+          <static>true</static>
+          <pose>-17.006512714398223 -2.0571651711662264 2.4717994325021175 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 4.9</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 4.9</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_90'>
+          <static>true</static>
+          <pose>12.307226712881842 1.9110844329239285 1.3150893882514465 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_91'>
+          <static>true</static>
+          <pose>16.68647692638497 -6.9322665089644016 1.275047939812869 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_92'>
+          <static>true</static>
+          <pose>12.485886184263201 -9.999313160005844 1.5829685365912014 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 3.2</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_93'>
+          <static>true</static>
+          <pose>-1.1758109340823424 3.9772366630998803 1.923240569579669 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 3.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 3.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_94'>
+          <static>true</static>
+          <pose>-12.066474680729522 8.559443396809783 2.1125334046797635 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.2</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.2</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_95'>
+          <static>true</static>
+          <pose>-17.43304669144555 -6.227975599334545 1.8981434304040596 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 3.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 3.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_96'>
+          <static>true</static>
+          <pose>12.902238587365325 -5.539154247548814 1.4258456501225658 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.6 0.6 2.9</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.6 0.6 2.9</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_97'>
+          <static>true</static>
+          <pose>-15.289361052982088 -1.783559502434386 1.915635433409656 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 3.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 3.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_98'>
+          <static>true</static>
+          <pose>11.997067409702211 9.537915986894838 1.7776968133182223 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_99'>
+          <static>true</static>
+          <pose>-8.9527658331115 -1.0938735919976708 1.6637966947212057 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_100'>
+          <static>true</static>
+          <pose>-13.582646553381492 -2.4135328312218496 1.3343229006603203 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.5 0.5 2.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_101'>
+          <static>true</static>
+          <pose>-19.30140651630435 -1.8477611684641033 2.260051603068443 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.5</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.5</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_102'>
+          <static>true</static>
+          <pose>0.4483375277653465 -4.825162874936888 1.6995308805455562 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.4</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.4</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_103'>
+          <static>true</static>
+          <pose>-4.703819975883636 3.0972862836514246 2.4103803295662587 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_104'>
+          <static>true</static>
+          <pose>-1.9137028017793511 -5.729892390359861 2.348382545907523 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_105'>
+          <static>true</static>
+          <pose>0.8845889473123094 0.5017853023836327 2.3457996639570795 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_106'>
+          <static>true</static>
+          <pose>15.2824096512039 -8.287552592747431 2.3216239031409764 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.6</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.6</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_107'>
+          <static>true</static>
+          <pose>18.946904406819954 -0.8519945701113159 2.3557731754982623 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_108'>
+          <static>true</static>
+          <pose>-12.360875105007123 3.2163285240513986 2.4206616585411442 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 4.8</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_109'>
+          <static>true</static>
+          <pose>-7.856709699874834 4.331550577828416 1.8429803151894784 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_110'>
+          <static>true</static>
+          <pose>14.306777080729262 -1.5035190046172637 2.465253257023835 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 4.9</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 4.9</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_111'>
+          <static>true</static>
+          <pose>-10.647865228211089 -3.3043572665611176 2.0157988238267817 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_112'>
+          <static>true</static>
+          <pose>-17.8561118385449 -8.924028524757308 2.047480657995799 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.1</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.1</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_113'>
+          <static>true</static>
+          <pose>-14.521981902146518 -3.856652532999947 2.1973340723633377 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.4</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.4</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_114'>
+          <static>true</static>
+          <pose>11.6307906802753 -0.2534800921681484 1.6552261576452443 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.3</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_115'>
+          <static>true</static>
+          <pose>-6.034898037366467 -2.7039892044717506 2.494588051021787 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 5.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 5.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_116'>
+          <static>true</static>
+          <pose>-12.311692166315108 -7.02919646535195 2.477296374915014 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>1.0 1.0 5.0</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>1.0 1.0 5.0</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_117'>
+          <static>true</static>
+          <pose>5.66218194391589 -4.0874319169915285 2.2602143555469265 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.9 0.9 4.5</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.9 0.9 4.5</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_118'>
+          <static>true</static>
+          <pose>-3.6979912992955235 -2.9526057179941345 1.8646679392989285 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.7 0.7 3.7</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.7 0.7 3.7</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+        
+        <model name='box_119'>
+          <static>true</static>
+          <pose>3.465455286651885 -6.051477757185446 2.0672624394787515 0.0 0.0 0.0</pose>
+          <link name='link'>
+            <visual name='visual'>
+              <geometry><box><size>0.8 0.8 4.1</size></box></geometry>
+            </visual>
+            <collision name='collision'>
+              <geometry><box><size>0.8 0.8 4.1</size></box></geometry>
+            </collision>
+          </link>
+        </model>
+         
+          <model name="block_0">
+          <pose>-13.383300756689483 0.5363580835997173 1.7935142069319716 0.0 0.0 -0.32617459520312964</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_1">
+          <pose>0.12081032278361548 -9.137055454709184 1.8995171241418918 0.0 0.0 0.14068325014009186</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_2">
+          <pose>14.773852059564245 -6.225499557061045 2.627484048951386 0.0 0.0 0.66638096026841</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_3">
+          <pose>1.1763255443750857 -1.8644033313018191 1.9894545826579777 0.0 0.0 0.11298075179957999</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_4">
+          <pose>-8.206121865333474 -9.330303331379287 2.1896050051614466 0.0 0.0 0.11153111963871716</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_5">
+          <pose>11.297556848800227 5.308570792971572 2.5827666397009663 0.0 0.0 0.19711014912139221</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_6">
+          <pose>-16.72903729048887 1.7753818689545184 2.7444836969081017 0.0 0.0 -0.08460488494527266</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_7">
+          <pose>-5.132354059744518 0.960737083321261 2.6751947284632935 0.0 0.0 -0.3070080923898518</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_8">
+          <pose>-13.094010907511034 -8.98272028759167 2.7054262959670456 0.0 0.0 0.3995634892666311</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_9">
+          <pose>14.885407747363416 0.6598300251996605 2.0007903980357815 0.0 0.0 -0.9410029532642953</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_10">
+          <pose>16.95625419426228 8.446751047770395 1.6377024149088952 0.0 0.0 0.6435882699140001</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_11">
+          <pose>-4.163504884917701 8.152374203739509 2.675888943476189 0.0 0.0 0.4870202976848966</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_12">
+          <pose>7.330265478301506 6.380464069278201 2.2654035664541095 0.0 0.0 0.2852681668985515</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_13">
+          <pose>2.225629727537086 8.682572105226573 2.091458595314808 0.0 0.0 -0.6619964320449255</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_14">
+          <pose>-14.36094093985917 2.6953364772753297 2.3305505010445144 0.0 0.0 0.35929821862809025</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_16">
+          <pose>-7.150727096804811 2.2631796968592237 2.078057320610121 0.0 0.0 0.31204036281126407</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_17">
+          <pose>-5.29880155799645 -9.303871329792768 2.308407084032827 0.0 0.0 -0.22374323054703482</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_18">
+          <pose>-11.674038668930258 5.646064182366576 1.7699076242748402 0.0 0.0 0.6086416201863843</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_19">
+          <pose>-1.0946625290919219 9.937201540882857 2.487054195152594 0.0 0.0 -0.12950594538279264</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_20">
+          <pose>11.29120959756128 -3.7018419598782515 2.669177032207288 0.0 0.0 -0.7730412480376904</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_21">
+          <pose>-10.350498211292571 9.825770468753888 2.6039404136976128 0.0 0.0 -1.0170485105329623</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_22">
+          <pose>0.9065582862749544 4.167343732241367 2.6258060402509034 0.0 0.0 -0.6566625483310676</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_23">
+          <pose>7.46869175689779 2.148058713047714 2.4495141358949337 0.0 0.0 0.19205109641291945</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_24">
+          <pose>-9.576777475960586 -7.012251349974658 2.676352344205774 0.0 0.0 0.8778777124460698</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_25">
+          <pose>8.201985611110192 -5.754767639823164 2.3138655817115668 0.0 0.0 -0.12696664860893234</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_26">
+          <pose>-11.00733628527693 1.174206092730568 2.6224499974970343 0.0 0.0 0.8318528326249169</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_27">
+          <pose>16.268906504978325 4.2055741588662965 2.396578108381624 0.0 0.0 0.6098740742012474</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_28">
+          <pose>9.261049022641462 -1.9259257078845486 1.8019956793051461 0.0 0.0 0.6908670081374471</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+         
+          <model name="block_29">
+          <pose>2.6132599408975423 -9.452564403915119 2.5103455068046605 0.0 0.0 -0.2596999337076135</pose>
+          <static>true</static>
+          <!-- 右侧垂直边 -->
+          <link name="right_vertical_edge">
+            <pose>0 0.925 0 0 0 0</pose> 
+            <visual name="right_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry> 
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="right_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 左侧垂直边 -->
+          <link name="left_vertical_edge">
+            <pose>0 -0.925 0 0 0 0</pose> 
+            <visual name="left_visual">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="left_collision">
+              <geometry><box><size>0.15 0.15 1.5</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 上侧水平边 -->
+          <link name="top_horizontal_edge">
+            <pose>0 0 0.675 0 0 0</pose>
+            <visual name="top_visual">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="top_collision">
+              <geometry><box><size> 0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 下侧水平边 -->
+          <link name="bottom_horizontal_edge">
+            <pose>0 0 -0.675 0 0 0</pose>
+            <visual name="bottom_visual">
+              <geometry><box><size>0.15 1.7  0.15</size></box></geometry>
+              <material>Gazebo/Blue</material>
+            </visual>
+            <collision name="bottom_collision">
+              <geometry><box><size>0.15 1.7 0.15</size></box></geometry>
+            </collision>
+          </link>
+          
+          <!-- 固定关节（不变） -->
+          <joint name="right-top_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-top_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>top_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="right-bottom_joint" type="fixed">
+            <parent>right_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="-0.925 0 0 0 0 0"/>
+          </joint>
+          <joint name="left-bottom_joint" type="fixed">
+            <parent>left_vertical_edge</parent>
+            <child>bottom_horizontal_edge</child>
+            <origin xyz="0.925 0 0 0 0 0"/>
+          </joint>
+        </model>
+        
+            </world>
+            </sdf>
+            

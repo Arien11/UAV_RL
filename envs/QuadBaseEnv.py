@@ -72,7 +72,6 @@ class QuadBaseEnv(MuJoCoSimulator):
         #     f"State vector length expected to be: {self.base_obs_len} but is {len(state)}"
         # )
         
-        # Manage observation history
         if len(self.observation_history) == 0:
             for _ in range(self.history_len):
                 self.observation_history.appendleft(np.zeros_like(state))

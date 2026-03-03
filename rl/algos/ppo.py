@@ -12,7 +12,7 @@ class PPO:
     def __init__(self, env_fn, args=None):
         # =========================== ppo参数 =========================== #
         self.clip = 0.2  # PPO裁剪系数
-        self.ent_coef = 0.001  # 熵系数（鼓励探索）
+        self.ent_coef = 0.01  # 熵系数（鼓励探索）
         self.gamma = 0.99  # 折扣因子
         self.lam = 0.95  # GAE参数
         # =========================== 网络设置 =========================== #
@@ -22,14 +22,13 @@ class PPO:
         env_instance = env_fn()  # single env instance for initialization queries
         obs_dim = env_instance.observation_space.shape[0]
         action_dim = env_instance.action_space.shape[0]
-        action_low = env_instance.action_space.low
-        action_high = env_instance.action_space.high
         # ================== 创建网络 ================== #
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        policy = FF_Actor(obs_dim, action_dim, bounded=True, learn_std=True).to(self.device)
-        critic = FF_Critic(obs_dim).to(self.device)
+        policy = FF_Actor(obs_dim, action_dim, layers=(256, 256), init_std=0.5, bounded=True, learn_std=True).to(self.device)
+        policy.action_scale = torch.tensor([0.2, 0.2, 0.2], device=self.device)
+        policy.action_bias = torch.zeros(3, device=self.device)
         
-        policy.set_action_range(action_low, action_high, self.device)
+        critic = FF_Critic(obs_dim, layers=(256, 256)).to(self.device)
         # ================== 设置观测归一化参数 ================== #
         if hasattr(env_instance, "obs_mean") and hasattr(env_instance, "obs_std"):
             # 直接从环境获取固定参数，并创建在目标设备上

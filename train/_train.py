@@ -36,15 +36,15 @@ class Training:
         
         self.seed = 1
         # ----------------------- train param ----------------------- #
-        self.actor_lr = 1e-4
-        self.critic_lr = 3e-5
+        self.actor_lr = 3e-4
+        self.critic_lr = 1e-4
         self.eps = 1e-6
-        self.grad_clip = 1  # 梯度裁剪阈值
+        self.grad_clip = 0.5  # 梯度裁剪阈值
         
-        self.minibatch_size = 256
-        self.epochs = 5
-        self.max_traj_len = 1000
-        self.n_proc = 2
+        self.minibatch_size = 512
+        self.epochs = 10
+        self.max_traj_len = 500
+        self.n_proc = 4
         
         self.eval_freq = 10
         self.recurrent = None
@@ -276,7 +276,7 @@ class Training:
             checkpoint['obs_rms_std'] = self.algo.obs_rms.std
             checkpoint['obs_rms_count'] = self.algo.obs_rms.count
         
-        path = self.ckpts_path / f"checkpoint_iter{itr}.pt"
+        path = self.ckpts_path / f"checkpoint_iter{itr + 1}.pt"
         torch.save(checkpoint, path)
         print(f"Checkpoint saved to {path}")
     
@@ -338,7 +338,7 @@ class Training:
             print(f"Normalization initialized with {self.algo.obs_rms.count:.0f} samples")
             print(f"  obs_mean range: [{obs_mean.min():.4f}, {obs_mean.max():.4f}]")
             print(f"  obs_std range: [{obs_std.min():.4f}, {obs_std.max():.4f}]")
-        
+            print("warmup finished ...")
         # =========================== training =========================== #
         start_itr = 0
         # 载入模型
@@ -404,6 +404,9 @@ class Training:
             mirror_losses = []
             imitation_losses = []
             clip_fractions = []
+            action_means = []
+            action_stds = []
+            action_offsets = []
             for epoch in range(self.epochs):
                 # ----------------------- random seed generate ----------------------- #
                 if self.seed is not None:  # Create seeded generator for deterministic batch sampling
@@ -447,12 +450,15 @@ class Training:
                     entropies.append(loss_dict["entropy_penalty"].item())
                     critic_losses.append(loss_dict["critic_loss"].item())
                     kls.append(loss_dict["approx_kl_div"].item())
+                    action_means.append(action_batch.mean())
+                    action_stds.append(action_batch.std())
+                    action_offsets.append(np.sum(action_batch.cpu().numpy()[:, :3], axis=0))
                     # mirror_losses.append(mirror_loss.item())
                     # imitation_losses.append(imitation_loss.item())
                     # clip_fractions.append(clip_fraction)
             
             # 保存模型
-            if itr % 10 == 0:
+            if (itr+1) % 10 == 0:
                 self.save_checkpoint(itr)
             
             # 日志记录
@@ -473,6 +479,9 @@ class Training:
             sys.stdout.write(f"| {'Mean Entropy':>15} | {np.mean(entropies):>15.3g} |\n")
             # sys.stdout.write(f"| {'Clip Fraction':>15} | {np.mean(clip_fractions):>15.3g} |\n")
             sys.stdout.write(f"| {'Mean noise std':>15} | {np.mean(action_noise):>15.3g} |\n")
+            sys.stdout.write(f"| {'actions mean':>15} | {np.mean(action_means):>15.3g} |\n")
+            sys.stdout.write(f"| {'actions std':>15} | {np.mean(action_stds):>15.3g} |\n")
+            sys.stdout.write(f"| {'action offsets':>15} | {np.mean(action_offsets):>15.3g} |\n")
             sys.stdout.write("-" * 37 + "\n")
             sys.stdout.flush()
             
@@ -553,8 +562,8 @@ def load_policy_for_inference(checkpoint_path, device='cpu'):
     # 创建策略网络实例（参数需与训练时一致）
     policy = FF_Actor(
         state_dim=13,  # 根据你的环境实际观测维度
-        action_dim=4,
-        layers=(256, 256),
+        action_dim=9,
+        layers=(512, 512),
         init_std=0.5,
         learn_std=True,  # 应与训练时一致
         bounded=True
@@ -600,14 +609,17 @@ def test_policy(policy, env_fn, num_episodes=5, deterministic=True, render=True)
                     viewer.sync()
                     
                     step += 1
+                    # print(f"step {step}, action Δz = {action[2]:.4f}")
                     if step % 100 == 0:
-                        print(f"Episode {ep + 1}, step {step}, reward {total_reward:.2f}")
+                        print(f"obs:{obs[2]:.2f}")
+                        # print(f"action:{action}")
+                        # print(f"Episode {ep + 1}, step {step}, reward {total_reward:.2f}")
                     
                     # 可以按需添加延迟（否则可能跑得太快）
                     # import time; time.sleep(0.01)
         else:
             # 不渲染时快速测试
-            while not done:
+            while True:
                 obs_tensor = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0).to(policy.obs_mean.device)
                 with torch.no_grad():
                     action = policy(obs_tensor, deterministic=deterministic).squeeze(0).cpu().numpy()
@@ -620,11 +632,24 @@ def test_policy(policy, env_fn, num_episodes=5, deterministic=True, render=True)
 
 
 if __name__ == '__main__':
-    
+    # train
     _ppo = PPO(make_env_fc)
     train_proc = Training(make_env_fc, _ppo)
     model_path = None
     if model_path:
         train_proc.train(200, model_path=model_path)
     else:
-        train_proc.train(10)
+        train_proc.train(50)
+    
+    # eval
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # checkpoint_path = "E:\\UAV_RL\\train\\checkpoints\\checkpoint_iter10.pt"
+    # policy = load_policy_for_inference(checkpoint_path, device=device)
+    #
+    # # 重要：恢复动作缩放参数（这些未保存在 state_dict 中，需手动设置）
+    # # 请确保这些值与训练时完全一致
+    # policy.action_scale = torch.tensor([2.0, 2.0, 2.0, 5.0, 5.0, 5.0, 10.0, 10.0, 10.0], device=device)
+    # policy.action_bias = torch.zeros(9, device=device)
+    #
+    # # 运行测试（渲染模式）
+    # test_policy(policy, make_env_fc, num_episodes=3, deterministic=True, render=True)

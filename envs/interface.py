@@ -42,7 +42,7 @@ class RobotInterface:
     def get_vel(self):
         return self.data.qvel.copy()[:3]
     
-    def get_angular_vel(self):
+    def get_omega(self):
         return self.data.qvel.copy()[3:]
     
     def get_acc(self):

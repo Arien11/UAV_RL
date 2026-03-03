@@ -27,8 +27,8 @@ def get_vel(interface):
     return interface.get_vel()
 
 
-def get_angular_vel(interface):
-    return interface.get_angular_vel()
+def get_omega(interface):
+    return interface.get_omega()
 
 
 def get_acc(interface):

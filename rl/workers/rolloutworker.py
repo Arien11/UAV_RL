@@ -113,6 +113,7 @@ class RolloutWorker:
             # 初始化或继续之前的状态
             if self.current_state is None:
                 state = torch.as_tensor(env.reset(), dtype=torch.float)
+                print("init_hidden_state")
                 self.current_traj_len = 0
                 self.current_ep_reward = 0.0
                 self.current_ep_len = 0
