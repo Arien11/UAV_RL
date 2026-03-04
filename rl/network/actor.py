@@ -63,8 +63,8 @@ class FF_Actor(Actor):
         self.state_dim = state_dim
         self.nonlinearity = nonlinearity
         
-        self.obs_std = 1.0
-        self.obs_mean = 0.0
+        self.obs_std = None
+        self.obs_mean = None
         
         self.bounded = bounded
         
@@ -78,6 +78,25 @@ class FF_Actor(Actor):
     def _get_dist_params(self, state):
         if torch.isnan(state).any():
             print("Input state contains NaN!")
+        
+        # 确保 obs_mean 和 obs_std 已设置
+        if self.obs_mean is None or self.obs_std is None:
+            # 如果没有设置，使用默认值
+            if len(state.shape) == 1:
+                state_dim = state.shape[0]
+            else:
+                state_dim = state.shape[1]
+            device = state.device
+            self.obs_mean = torch.zeros(state_dim, device=device)
+            self.obs_std = torch.ones(state_dim, device=device)
+        
+        # 确保 obs_mean 和 obs_std 在正确的设备上
+        device = state.device
+        if self.obs_mean.device != device:
+            self.obs_mean = self.obs_mean.to(device)
+        if self.obs_std.device != device:
+            self.obs_std = self.obs_std.to(device)
+        
         state = (state - self.obs_mean) / self.obs_std
         state = torch.clamp(state, -10.0, 10.0)  # 限制输入范围
         
@@ -155,8 +174,8 @@ class TrajParam_Actor(Actor):
         self.state_dim = state_dim
         self.nonlinearity = nonlinearity
         
-        self.obs_std = 1.0
-        self.obs_mean = 0.0
+        self.obs_std = None
+        self.obs_mean = None
         
         self.bounded = bounded
         

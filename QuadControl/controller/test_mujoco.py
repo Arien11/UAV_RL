@@ -1,3 +1,12 @@
+import sys
+import os
+
+# 添加项目根目录到Python路径
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+
 import mujoco.viewer
 import scipy.spatial.transform
 import matplotlib.pyplot as plt
@@ -232,28 +241,28 @@ def main():
         #         # omega = env.data.qvel[3:6].copy()
         
         t = env.data.time
-        # pos_des, vel_des, acc_des = Circle_traj(t)
+        pos_des, vel_des, acc_des = Circle_traj(t)
         # pos_des, vel_des, acc_des = Eight_traj(t)
-        offset = offset_generator(t)
+        # offset = offset_generator(t)
         # 悬停
-        pos_des = [0, 0, 0.5] + offset
-        vel_des = [0, 0, 0]
-        acc_des = [0, 0, 0]
+        # pos_des = [0, 0, 0.5] + offset
+        # vel_des = [0, 0, 0]
+        # acc_des = [0, 0, 0]
         
-        dx = 0 - pos_des[0]
-        dy = 0 - pos_des[1]
-        # 在每个时间步
-        raw_yaw = np.arctan2(dy, dx)  # 原始偏航角（可能跳变）
-        delta = raw_yaw - last_yaw
-        # 将差值调整到 (-π, π] 区间
-        if delta > np.pi:
-            delta -= 2 * np.pi
-        elif delta < -np.pi:
-            delta += 2 * np.pi
-        yaw_des = last_yaw + delta
-        last_yaw = yaw_des
+        # dx = 0 - pos_des[0]
+        # dy = 0 - pos_des[1]
+        # # 在每个时间步
+        # raw_yaw = np.arctan2(dy, dx)  # 原始偏航角（可能跳变）
+        # delta = raw_yaw - last_yaw
+        # # 将差值调整到 (-π, π] 区间
+        # if delta > np.pi:
+        #     delta -= 2 * np.pi
+        # elif delta < -np.pi:
+        #     delta += 2 * np.pi
+        # yaw_des = last_yaw + delta
+        # last_yaw = yaw_des
         
-        # yaw_des = 0
+        yaw_des = 0
         desired_state = {'pos_des': pos_des, 'vel_des': vel_des,
                          'acc_des': acc_des, 'yaw_des': yaw_des}
         state = {'pos': pos, 'vel': vel, 'quat': quat, 'omega': omega}

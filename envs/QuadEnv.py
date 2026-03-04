@@ -156,7 +156,7 @@ class QuadEnv(QuadBaseEnv):
         """Return length of UAV state vector
         Px, Py, Pz, Vx, Vy, Vz, Wx, Wy, Wz, qx, qy, qz, qw,
         """
-        return 13 * self.history_len
+        return 13
     
     def _get_num_external_obs(self):
         """Return length of UAV  external state vector

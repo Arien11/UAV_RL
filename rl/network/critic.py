@@ -32,14 +32,41 @@ class FF_Critic(Critic):
         
         self.nonlinearity = nonlinearity
         
-        self.obs_std = obs_std
-        self.obs_mean = obs_mean
+        if obs_std is None:
+            self.obs_std = torch.ones(state_dim)
+        else:
+            self.obs_std = obs_std
+            
+        if obs_mean is None:
+            self.obs_mean = torch.zeros(state_dim)
+        else:
+            self.obs_mean = obs_mean
+            
         self.normc_init = normc_init
         
         self.init_parameters()
     
     def forward(self, state):
         # 估计当前状态价值
+        
+        # 确保 obs_mean 和 obs_std 已设置
+        if self.obs_mean is None or self.obs_std is None:
+            # 如果没有设置，使用默认值
+            if len(state.shape) == 1:
+                state_dim = state.shape[0]
+            else:
+                state_dim = state.shape[1]
+            device = state.device
+            self.obs_mean = torch.zeros(state_dim, device=device)
+            self.obs_std = torch.ones(state_dim, device=device)
+        
+        # 确保 obs_mean 和 obs_std 在正确的设备上
+        device = state.device
+        if self.obs_mean.device != device:
+            self.obs_mean = self.obs_mean.to(device)
+        if self.obs_std.device != device:
+            self.obs_std = self.obs_std.to(device)
+        
         state = (state - self.obs_mean) / self.obs_std
         
         x = state
