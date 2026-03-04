@@ -1,12 +1,13 @@
 import sys
 import os
+import numpy as np
 
 # 添加项目根目录到Python路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-
+import time
 import mujoco.viewer
 import scipy.spatial.transform
 import matplotlib.pyplot as plt
@@ -176,13 +177,11 @@ def offset_generator(t, start_time=2.0, period=5.0, amplitude=0.05):
 
 # ================== 主仿真程序 ==================
 def main():
-    # # 加载模型
-    # model = mujoco.MjModel.from_xml_path("E:\\UAV_RL\envs\crazyfile\scene.xml")
-    # data = mujoco.MjData(model)
     import yaml
     import mujoco
     from envs.config_builder import Configuration
     from envs.QuadEnv import QuadEnv
+    
     # ========== 加载环境 ==========
     with open(r"E:\UAV_RL\config\Quad_config.yaml", 'r') as f:
         config_data = yaml.safe_load(f)
@@ -191,19 +190,18 @@ def main():
     obs = env.reset()
     
     # 控制参数（应与环境匹配）
-    control_dt = 0.02  # 控制周期 (s)
-    sim_time = 10.0  # 仿真总时长 (s)
-    steps = int(sim_time / control_dt)
+    control_dt = 0.005  # 控制周期 (s)
+    sim_time = 30.0  # 仿真总时长 (s)
     
     # 计算 frame_skip（物理步长从 interface 获取）
     phys_dt = env.interface.sim_dt()
     frame_skip = int(control_dt / phys_dt)
     print(f"物理步长: {phys_dt * 1000:.2f} ms, 控制周期: {control_dt * 1000:.2f} ms, frame_skip: {frame_skip}")
-    
+
     # 启动 viewer
     try:
         viewer = mujoco.viewer.launch_passive(env.model, env.data)
-        use_viewer = True
+        use_viewer = True                                                                           
         print("可视化窗口已启动。使用鼠标拖动旋转视角，滚轮缩放。")
     except Exception as e:
         print(f"无法启动 viewer：{e}")
@@ -216,9 +214,30 @@ def main():
     controller = GeometricController(m, J)
     
     # 初始位置（模型初始 z=0.1）
-    env.data.qpos[2] = 0.2  # 确保初始高度
+    env.data.qpos[2] = 0.2  # 确保初始高度                                              
     mujoco.mj_forward(env.model, env.data)  # 更新传感器和渲染状态
-    print(f"初始高度设置后: data.qpos[2] = {env.data.qpos[2]:.3f}")
+    print(f"初始高度设置后: z = {env.data.qpos[2]:.3f}")
+    
+    # ========== 初始化相机显示窗口（可选）==========
+    show_camera = True  # 设置为False可以大幅提升性能
+    show_plt = False
+    fig, axes = None, None
+    im_rgb, im_depth = None, None
+    
+    if show_camera:
+        fig, axes = plt.subplots(1, 2, figsize=(6, 4))
+        im_rgb = axes[0].imshow(np.zeros((120, 160, 3), dtype=np.uint8))
+        axes[0].set_title('RGB Image')
+        axes[0].axis('off')
+        
+        im_depth = axes[1].imshow(np.zeros((120, 160)), cmap='jet', vmin=0, vmax=5)
+        axes[1].set_title('Depth Image')
+        axes[1].axis('off')
+        cbar = plt.colorbar(im_depth, ax=axes[1], label='Depth (m)')
+        
+        plt.tight_layout()
+        plt.ion()
+        plt.show()
     
     sim_steps = 0
     last_yaw = 0
@@ -229,172 +248,164 @@ def main():
     thrust_norm_lst = []
     scale_lst = []
     tau_des_max_lst = []
-    while True:
-        # 获取当前状态
-        pos = env.interface.get_pos()
-        quat = env.interface.get_quat()
-        vel = env.interface.get_vel()
-        omega = env.interface.get_omega()
-        # pos = env.data.qpos[0:3].copy()
-        #         # quat = env.data.qpos[3:7].copy()  # w,x,y,z
-        #         # vel = env.data.qvel[0:3].copy()
-        #         # omega = env.data.qvel[3:6].copy()
-        
-        t = env.data.time
-        pos_des, vel_des, acc_des = Circle_traj(t)
-        # pos_des, vel_des, acc_des = Eight_traj(t)
-        # offset = offset_generator(t)
-        # 悬停
-        # pos_des = [0, 0, 0.5] + offset
-        # vel_des = [0, 0, 0]
-        # acc_des = [0, 0, 0]
-        
-        # dx = 0 - pos_des[0]
-        # dy = 0 - pos_des[1]
-        # # 在每个时间步
-        # raw_yaw = np.arctan2(dy, dx)  # 原始偏航角（可能跳变）
-        # delta = raw_yaw - last_yaw
-        # # 将差值调整到 (-π, π] 区间
-        # if delta > np.pi:
-        #     delta -= 2 * np.pi
-        # elif delta < -np.pi:
-        #     delta += 2 * np.pi
-        # yaw_des = last_yaw + delta
-        # last_yaw = yaw_des
-        
-        yaw_des = 0
-        desired_state = {'pos_des': pos_des, 'vel_des': vel_des,
-                         'acc_des': acc_des, 'yaw_des': yaw_des}
-        state = {'pos': pos, 'vel': vel, 'quat': quat, 'omega': omega}
-        
-        # 计算电机推力
-        ctrl, thrust_norm, scale, tau_des_max = controller.update(state, desired_state)
-        
-        # 转换为控制量 (0~1)
-        env.data.ctrl[:] = ctrl
-        
-        # 仿真步进
-        mujoco.mj_step(env.model, env.data)
-        
-        # 更新可视化
-        if use_viewer:
-            viewer.sync()
-            if not viewer.is_running():
-                break
-        
-        # 打印误差
-        sim_steps += 1
-        if sim_steps % 50 == 0:
-            error = np.linalg.norm(pos - pos_des)
-            print(f"\n--- t={t:.2f} ---")
-            print(f"位置误差:{error}")
-            # print(f"期望: x={pos_des[0]:.3f}, y={pos_des[1]:.3f}, z={pos_des[2]:.3f}")
-            # print(f"位置误差: x={e_p[0]:.3f}, y={e_p[1]:.3f}, z={e_p[2]:.3f}")
-            # print(f"期望推力向量 F_des: {F_des}")
-            # print(f"期望总推力 norm: {thrust_norm:.4f} N")
-            # print(f"实际总推力: {actual_total_thrust:.4f} N")
-            # print(f"电机推力: {motor_thrusts}")
-            # print(f"控制量 ctrl: {ctrl}")
+    
+    # 时间同步变量
+    last_wall_time = time.time()
+    
+    try:
+        while True:
+            # 获取当前状态
+            pos = env.interface.get_pos()
+            quat = env.interface.get_quat()
+            vel = env.interface.get_vel()
+            omega = env.interface.get_omega()
+            t = env.data.time
+
+            pos_des, vel_des, acc_des = Eight_traj(t)
+            #pos_des, vel_des, acc_des = Circle_traj(t)
+            # offset = offset_generator(t)
+            # 悬停
+            # pos_des = [0, 0, 0.5] + offset
+            # vel_des = [0, 0, 0]
+            # acc_des = [0, 0, 0]
             
-            rpy = quat_to_euler(np.roll(quat, -1))
-            rpy_lst.append(rpy)
-            pos_lst.append(pos)
-            pos_des_lst.append(pos_des)
-            time_lst.append(t)
-            thrust_norm_lst.append(thrust_norm)
-            scale_lst.append(scale)
-            tau_des_max_lst.append(tau_des_max)
+            # dx = 0 - pos_des[0]
+            # dy = 0 - pos_des[1]
+            
+            yaw_des = 0
+            desired_state = {'pos_des': pos_des, 'vel_des': vel_des,
+                             'acc_des': acc_des, 'yaw_des': yaw_des}
+            state = {'pos': pos, 'vel': vel, 'quat': quat, 'omega': omega}
+            
+            # 计算电机推力
+            ctrl, thrust_norm, scale, tau_des_max = controller.update(state, desired_state)
+            
+            # 转换为控制量 (0~1)
+            env.data.ctrl[:] = ctrl
+            
+            # ========== 多步物理（正确做法）==========
+            for _ in range(frame_skip):
+                mujoco.mj_step(env.model, env.data)
+            
+            # ========== 时间同步：按控制周期同步（关键！）==========
+            # current_wall_time = time.time()
+            # elapsed_wall = current_wall_time - last_wall_time
+            # if elapsed_wall < control_dt:
+            #     time.sleep(control_dt - elapsed_wall)
+            # last_wall_time = time.time()
+            
+            # 更新可视化
+            if use_viewer:
+                viewer.sync()
+                if not viewer.is_running():
+                    break
+            
+            # 更新相机图像（降低频率以提升性能）
+            if show_camera and sim_steps % 50 == 0:
+                try:
+                    # rgb, depth = env.get_camera_data()
+                    depth = env.get_camera_depth()
+                    # im_rgb.set_data(rgb)
+                    im_depth.set_data(depth)
+                    fig.canvas.draw_idle()  # 使用draw_idle代替draw更高效
+                    fig.canvas.flush_events()
+                except Exception as e:
+                    print(f"获取相机数据失败: {e}")
+            
+            # 打印误差
+            sim_steps += 1
+            if sim_steps % 50 == 0:
+                error = np.linalg.norm(pos - pos_des)
+                # print(f"\n--- t={t:.2f} ---")
+                # print(f"位置误差:{error}")
+                
+                rpy = quat_to_euler(np.roll(quat, -1))
+                rpy_lst.append(rpy)
+                pos_lst.append(pos)
+                pos_des_lst.append(pos_des)
+                time_lst.append(t)
+                thrust_norm_lst.append(thrust_norm)
+                scale_lst.append(scale)
+                tau_des_max_lst.append(tau_des_max)
+            
+            # if t > sim_time:
+            #     break
+                
+    except KeyboardInterrupt:
+        print("仿真被用户中断")
+    finally:
+        if show_camera:
+            plt.ioff()
+            plt.close(fig)
+        if use_viewer:
+            viewer.close()
+        env.close()
     
     # ========== 绘图 ==========
-    plt.figure(figsize=(14, 10))
-    pos_lst = np.array(pos_lst)
-    rpy_lst = np.array(rpy_lst)
-    pos_des_lst = np.array(pos_des_lst)
-    time_lst = np.array(time_lst)
-    # 位置
-    plt.subplot(2, 3, 1)
-    plt.plot(time_lst, pos_lst[:, 0], label='x')
-    plt.plot(time_lst, pos_des_lst[:, 0], linestyle='--', label='目标 x')
-    
-    plt.xlabel('时间 (s)')
-    plt.ylabel('位置 (m)')
-    plt.legend()
-    plt.grid(True)
-    plt.title('x 位置变化')
-    
-    plt.subplot(2, 3, 2)
-    plt.plot(time_lst, pos_lst[:, 1], label='y')
-    plt.plot(time_lst, pos_des_lst[:, 1], linestyle='--', label='目标 y')
-    plt.xlabel('时间 (s)')
-    plt.ylabel('位置 (m)')
-    plt.legend()
-    plt.grid(True)
-    plt.title('y 位置变化')
-    
-    plt.subplot(2, 3, 3)
-    plt.plot(time_lst, pos_lst[:, 2], label='z')
-    plt.plot(time_lst, pos_des_lst[:, 2], linestyle='--', label='目标 z')
-    plt.xlabel('时间 (s)')
-    plt.ylabel('位置 (m)')
-    plt.legend()
-    plt.grid(True)
-    plt.title('z 位置变化')
-    
-    # 姿态角
-    plt.subplot(2, 3, 4)
-    plt.plot(time_lst, np.degrees(rpy_lst[:, 0]), label='roll')
-    plt.xlabel('时间 (s)')
-    plt.ylabel('角度 (deg)')
-    plt.legend()
-    plt.grid(True)
-    plt.title('roll')
-    
-    plt.subplot(2, 3, 5)
-    plt.plot(time_lst, np.degrees(rpy_lst[:, 1]), label='pitch')
-    plt.xlabel('时间 (s)')
-    plt.ylabel('角度 (deg)')
-    plt.legend()
-    plt.grid(True)
-    plt.title('pitch')
-    
-    plt.subplot(2, 3, 6)
-    plt.plot(time_lst, np.degrees(rpy_lst[:, 2]), label='yaw')
-    plt.xlabel('时间 (s)')
-    plt.ylabel('角度 (deg)')
-    plt.legend()
-    plt.grid(True)
-    plt.title('yaw')
-    
-    # 混控器
-    # plt.subplot(2, 3, 4)
-    # plt.plot(time_lst, thrust_norm_lst, label='thrust')
-    # plt.xlabel('时间 (s)')
-    # plt.ylabel('thrust N')
-    # plt.legend()
-    # plt.grid(True)
-    #
-    # plt.subplot(2, 3, 5)
-    # plt.plot(time_lst, scale_lst, label='scale')
-    # plt.xlabel('时间 (s)')
-    # plt.ylabel('scale')
-    # plt.legend()
-    # plt.grid(True)
-    #
-    # plt.subplot(2, 3, 6)
-    # plt.plot(time_lst, tau_des_max_lst, label='tau_des')
-    # plt.xlabel('时间 (s)')
-    # plt.ylabel('tau')
-    # plt.legend()
-    # plt.grid(True)
-    # thrust_norm_lst.append(thrust_norm)
-    # scale_lst.append(scale)
-    # tau_des_max_lst.append(tau_des_max)
-    
-    plt.tight_layout()
-    plt.show()
-    if use_viewer:
-        viewer.close()
+    if show_plt:
+        plt.figure(figsize=(14, 10))
+        pos_lst = np.array(pos_lst)
+        rpy_lst = np.array(rpy_lst)
+        pos_des_lst = np.array(pos_des_lst)
+        time_lst = np.array(time_lst)
+        # 位置
+        plt.subplot(2, 3, 1)
+        plt.plot(time_lst, pos_lst[:, 0], label='x')
+        plt.plot(time_lst, pos_des_lst[:, 0], linestyle='--', label='目标 x')
+        
+        plt.xlabel('时间 (s)')
+        plt.ylabel('位置 (m)')
+        plt.legend()
+        plt.grid(True)
+        plt.title('x 位置变化')
+        
+        plt.subplot(2, 3, 2)
+        plt.plot(time_lst, pos_lst[:, 1], label='y')
+        plt.plot(time_lst, pos_des_lst[:, 1], linestyle='--', label='目标 y')
+        plt.xlabel('时间 (s)')
+        plt.ylabel('位置 (m)')
+        plt.legend()
+        plt.grid(True)
+        plt.title('y 位置变化')
+        
+        plt.subplot(2, 3, 3)
+        plt.plot(time_lst, pos_lst[:, 2], label='z')
+        plt.plot(time_lst, pos_des_lst[:, 2], linestyle='--', label='目标 z')
+        plt.xlabel('时间 (s)')
+        plt.ylabel('位置 (m)')
+        plt.legend()
+        plt.grid(True)
+        plt.title('z 位置变化')
+        
+        # 姿态角
+        plt.subplot(2, 3, 4)
+        plt.plot(time_lst, np.degrees(rpy_lst[:, 0]), label='roll')
+        plt.xlabel('时间 (s)')
+        plt.ylabel('角度 (deg)')
+        plt.legend()
+        plt.grid(True)
+        plt.title('roll')
+        
+        plt.subplot(2, 3, 5)
+        plt.plot(time_lst, np.degrees(rpy_lst[:, 1]), label='pitch')
+        plt.xlabel('时间 (s)')
+        plt.ylabel('角度 (deg)')
+        plt.legend()
+        plt.grid(True)
+        plt.title('pitch')
+        
+        plt.subplot(2, 3, 6)
+        plt.plot(time_lst, np.degrees(rpy_lst[:, 2]), label='yaw')
+        plt.xlabel('时间 (s)')
+        plt.ylabel('角度 (deg)')
+        plt.legend()
+        plt.grid(True)
+        plt.title('yaw')
+        
+        plt.tight_layout()
+        plt.show()
 
 
 if __name__ == "__main__":
     main()
+

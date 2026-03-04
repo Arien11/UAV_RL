@@ -21,7 +21,6 @@ class HoverTask(BaseTask):
         # ========== 动作空间定义 ==========
         # 动作 = [Δpos (3), v_end (3), a_end (3)]
         # 物理意义：对参考位置/航向的修正量
-        self.base_thrust = 0.5145  # 校准后的悬停推力
         self.action_dim = 3
         self.action_low = np.array([-0.05, -0.05, -0.05], dtype=np.float32)
         self.action_high = np.array([0.05, 0.05, 0.05], dtype=np.float32)

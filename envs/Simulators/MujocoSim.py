@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any
 import mujoco
 import numpy as np
 import mujoco.viewer
-import time
 import yaml
 
 
@@ -30,7 +28,7 @@ class XMLModelLoader:
         return model is not None and model.nq > 0
 
 
-class MuJoCoSimulator:
+class MuJoCoSimulator(ABC):
     def __init__(self, model_path):
         XML_loader = XMLModelLoader()
         env_config = {}
@@ -45,10 +43,22 @@ class MuJoCoSimulator:
         
         self.init_qpos = self.data.qpos.ravel().copy()
         self.init_qvel = self.data.qvel.ravel().copy()
+        
+        self._camera_renderer = None
+        self._camera_name = "drone_depth_camera"
+        self._camera_width = 160
+        self._camera_height = 120
+        self._last_camera_frame = 0
+        self._cached_rgb = None
+        self._cached_depth = None
     
     def reset_model(self):
+        if self._camera_renderer is not None:
+            self._camera_renderer.close()
+            self._camera_renderer = None
         """重置robot到其特定的初始状态"""
-        raise NotImplementedError
+        # raise NotImplementedError
+
     
     def viewer_setup(self):
         """
@@ -118,6 +128,70 @@ class MuJoCoSimulator:
         if self.viewer is not None:
             self.viewer.close()
             self.viewer = None
+        self._close_camera()
+    
+    def _init_camera(self, camera_name=None, width=None, height=None):
+        """初始化深度相机渲染器"""
+        if camera_name is not None:
+            self._camera_name = camera_name
+        if width is not None:
+            self._camera_width = width
+        if height is not None:
+            self._camera_height = height
+        
+        cam_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_CAMERA, self._camera_name)
+        if cam_id == -1:
+            raise ValueError(f"Camera '{self._camera_name}' not found!")
+        
+        self._camera_renderer = mujoco.Renderer(self.model, self._camera_height, self._camera_width)
+        self._camera_renderer._cam_id = cam_id
+        
+    def _close_camera(self):
+        """关闭深度相机渲染器"""
+        if self._camera_renderer is not None:
+            self._camera_renderer.close()
+            self._camera_renderer = None
+    
+    def get_camera_rgb(self, force_update=False):
+        """获取相机RGB图像"""
+        if self._camera_renderer is None:
+            self._init_camera()
+        
+        current_frame = int(self.data.time * 100)
+        if force_update or current_frame != self._last_camera_frame:
+            self._camera_renderer.update_scene(self.data, camera=self._camera_name)
+            self._cached_rgb = self._camera_renderer.render()
+            self._last_camera_frame = current_frame
+        
+        return self._cached_rgb
+    
+    def get_camera_depth(self, force_update=False):
+        """获取相机深度图（优化版）"""
+        if self._camera_renderer is None:
+            self._init_camera()
+        
+        current_frame = int(self.data.time * 100)
+        if force_update or current_frame != self._last_camera_frame or self._cached_depth is None:
+            self._camera_renderer.update_scene(self.data, camera=self._camera_name)
+            rgb = self._camera_renderer.render()
+            
+            depth_gray = np.mean(rgb, axis=2).astype(np.float32)
+            depth_normalized = depth_gray / 255.0
+            
+            extent = self.model.stat.extent
+            near = self.model.vis.map.znear * extent
+            far = self.model.vis.map.zfar * extent
+            
+            self._cached_depth = near / (1 - depth_normalized * (1 - near / far))
+            self._last_camera_frame = current_frame
+        
+        return self._cached_depth
+    
+    def get_camera_data(self, force_update=False):
+        """同时获取RGB图像和深度图"""
+        rgb = self.get_camera_rgb(force_update=force_update)
+        depth = self.get_camera_depth(force_update=force_update)
+        return rgb, depth
 
 
 if __name__ == '__main__':

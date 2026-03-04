@@ -1,4 +1,5 @@
-<mujoco model="CF2 scene">
+
+<mujoco model="seed_6_map">
   <include file="cf2.xml"/>
 
   <statistic center="0 0 0" extent="20"/>
@@ -8,14 +9,12 @@
     <rgba haze="0.15 0.25 0.35 1"/>
     <global azimuth="-20" elevation="-20" ellipsoidinertia="true"/>
   </visual>
-
   <asset>
     <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
     <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
       markrgb="0.8 0.8 0.8" width="300" height="300"/>
-    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
-
-    <!-- 添加障碍物材质 -->
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5"/>
+    
     <material name="obstacle_red" rgba="0.8 0.2 0.2 1"/>
     <material name="obstacle_green" rgba="0.2 0.8 0.2 1"/>
     <material name="obstacle_blue" rgba="0.2 0.2 0.8 1"/>
@@ -25,9 +24,10 @@
   </asset>
 
   <worldbody>
-    <camera name="world_camera" pos="0.560 -0.687 0.744" xyaxes="0.872 0.489 -0.000 -0.260 0.465 0.846"/>
-    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
-    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+    <geom name="ground" type="plane" size="100 100 0.05" material="groundplane"/>
+    
+    <light pos="10 -10 20" dir="-1 1 -1" diffuse="0.8 0.8 0.8" ambient="0.3 0.3 0.3"/>
+    <light pos="-10 10 15" dir="1 -1 -1" diffuse="0.6 0.6 0.6" ambient="0.2 0.2 0.2"/>
     <!-- box_0 -->
     <body name="box_0" pos="-15.693732802561282 1.9010412841248048 1.3021207821565621" euler="0.0 0.0 0.0">
       <geom type="box" size="0.25 0.25 1.3" material="obstacle_grey"/>
@@ -509,208 +509,209 @@
       <geom type="box" size="0.4 0.4 2.05" material="obstacle_grey"/>
     </body>
     <!-- block_0 (block frame) -->
-    <body name="block_0" pos="-13.383300756689483 0.5363580835997173 1.7935142069319716" euler="0.0 0.0 -0.32617459520312964">
+    <body name="block_0" pos="-13.383300756689483 0.5363580835997173 1.7935142069319716" euler="0.0 0.0 -18.688427689527394">
       <geom name="block_0_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_0_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_0_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_0_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_1 (block frame) -->
-    <body name="block_1" pos="0.12081032278361548 -9.137055454709184 1.8995171241418918" euler="0.0 0.0 0.14068325014009186">
+    <body name="block_1" pos="0.12081032278361548 -9.137055454709184 1.8995171241418918" euler="0.0 0.0 8.060556481210511">
       <geom name="block_1_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_1_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_1_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_1_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_2 (block frame) -->
-    <body name="block_2" pos="14.773852059564245 -6.225499557061045 2.627484048951386" euler="0.0 0.0 0.66638096026841">
+    <body name="block_2" pos="14.773852059564245 -6.225499557061045 2.627484048951386" euler="0.0 0.0 38.18081657125489">
       <geom name="block_2_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_2_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_2_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_2_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_3 (block frame) -->
-    <body name="block_3" pos="1.1763255443750857 -1.8644033313018191 1.9894545826579777" euler="0.0 0.0 0.11298075179957999">
+    <body name="block_3" pos="1.1763255443750857 -1.8644033313018191 1.9894545826579777" euler="0.0 0.0 6.473320244331014">
       <geom name="block_3_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_3_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_3_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_3_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_4 (block frame) -->
-    <body name="block_4" pos="-8.206121865333474 -9.330303331379287 2.1896050051614466" euler="0.0 0.0 0.11153111963871716">
+    <body name="block_4" pos="-8.206121865333474 -9.330303331379287 2.1896050051614466" euler="0.0 0.0 6.390262439667144">
       <geom name="block_4_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_4_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_4_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_4_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_5 (block frame) -->
-    <body name="block_5" pos="11.297556848800227 5.308570792971572 2.5827666397009663" euler="0.0 0.0 0.19711014912139221">
+    <body name="block_5" pos="11.297556848800227 5.308570792971572 2.5827666397009663" euler="0.0 0.0 11.293579643850066">
       <geom name="block_5_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_5_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_5_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_5_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_6 (block frame) -->
-    <body name="block_6" pos="-16.72903729048887 1.7753818689545184 2.7444836969081017" euler="0.0 0.0 -0.08460488494527266">
+    <body name="block_6" pos="-16.72903729048887 1.7753818689545184 2.7444836969081017" euler="0.0 0.0 -4.84750283355404">
       <geom name="block_6_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_6_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_6_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_6_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_7 (block frame) -->
-    <body name="block_7" pos="-5.132354059744518 0.960737083321261 2.6751947284632935" euler="0.0 0.0 -0.3070080923898518">
+    <body name="block_7" pos="-5.132354059744518 0.960737083321261 2.6751947284632935" euler="0.0 0.0 -17.590267970300957">
       <geom name="block_7_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_7_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_7_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_7_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_8 (block frame) -->
-    <body name="block_8" pos="-13.094010907511034 -8.98272028759167 2.7054262959670456" euler="0.0 0.0 0.3995634892666311">
+    <body name="block_8" pos="-13.094010907511034 -8.98272028759167 2.7054262959670456" euler="0.0 0.0 22.89330158249873">
       <geom name="block_8_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_8_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_8_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_8_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_9 (block frame) -->
-    <body name="block_9" pos="14.885407747363416 0.6598300251996605 2.0007903980357815" euler="0.0 0.0 -0.9410029532642953">
+    <body name="block_9" pos="14.885407747363416 0.6598300251996605 2.0007903980357815" euler="0.0 0.0 -53.915497731390374">
       <geom name="block_9_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_9_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_9_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_9_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_10 (block frame) -->
-    <body name="block_10" pos="16.95625419426228 8.446751047770395 1.6377024149088952" euler="0.0 0.0 0.6435882699140001">
+    <body name="block_10" pos="16.95625419426228 8.446751047770395 1.6377024149088952" euler="0.0 0.0 36.87489161019866">
       <geom name="block_10_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_10_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_10_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_10_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_11 (block frame) -->
-    <body name="block_11" pos="-4.163504884917701 8.152374203739509 2.675888943476189" euler="0.0 0.0 0.4870202976848966">
+    <body name="block_11" pos="-4.163504884917701 8.152374203739509 2.675888943476189" euler="0.0 0.0 27.90420759454955">
       <geom name="block_11_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_11_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_11_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_11_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_12 (block frame) -->
-    <body name="block_12" pos="7.330265478301506 6.380464069278201 2.2654035664541095" euler="0.0 0.0 0.2852681668985515">
+    <body name="block_12" pos="7.330265478301506 6.380464069278201 2.2654035664541095" euler="0.0 0.0 16.344661992720575">
       <geom name="block_12_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_12_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_12_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_12_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_13 (block frame) -->
-    <body name="block_13" pos="2.225629727537086 8.682572105226573 2.091458595314808" euler="0.0 0.0 -0.6619964320449255">
+    <body name="block_13" pos="2.225629727537086 8.682572105226573 2.091458595314808" euler="0.0 0.0 -37.929601608893236">
       <geom name="block_13_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_13_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_13_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_13_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_14 (block frame) -->
-    <body name="block_14" pos="-14.36094093985917 2.6953364772753297 2.3305505010445144" euler="0.0 0.0 0.35929821862809025">
+    <body name="block_14" pos="-14.36094093985917 2.6953364772753297 2.3305505010445144" euler="0.0 0.0 20.586271513958305">
       <geom name="block_14_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_14_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_14_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_14_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_16 (block frame) -->
-    <body name="block_16" pos="-7.150727096804811 2.2631796968592237 2.078057320610121" euler="0.0 0.0 0.31204036281126407">
+    <body name="block_16" pos="-7.150727096804811 2.2631796968592237 2.078057320610121" euler="0.0 0.0 17.878595826816397">
       <geom name="block_16_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_16_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_16_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_16_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_17 (block frame) -->
-    <body name="block_17" pos="-5.29880155799645 -9.303871329792768 2.308407084032827" euler="0.0 0.0 -0.22374323054703482">
+    <body name="block_17" pos="-5.29880155799645 -9.303871329792768 2.308407084032827" euler="0.0 0.0 -12.819542804967652">
       <geom name="block_17_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_17_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_17_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_17_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_18 (block frame) -->
-    <body name="block_18" pos="-11.674038668930258 5.646064182366576 1.7699076242748402" euler="0.0 0.0 0.6086416201863843">
+    <body name="block_18" pos="-11.674038668930258 5.646064182366576 1.7699076242748402" euler="0.0 0.0 34.872596072684274">
       <geom name="block_18_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_18_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_18_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_18_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_19 (block frame) -->
-    <body name="block_19" pos="-1.0946625290919219 9.937201540882857 2.487054195152594" euler="0.0 0.0 -0.12950594538279264">
+    <body name="block_19" pos="-1.0946625290919219 9.937201540882857 2.487054195152594" euler="0.0 0.0 -7.420144092285769">
       <geom name="block_19_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_19_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_19_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_19_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_20 (block frame) -->
-    <body name="block_20" pos="11.29120959756128 -3.7018419598782515 2.669177032207288" euler="0.0 0.0 -0.7730412480376904">
+    <body name="block_20" pos="11.29120959756128 -3.7018419598782515 2.669177032207288" euler="0.0 0.0 -44.29200090208549">
       <geom name="block_20_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_20_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_20_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_20_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_21 (block frame) -->
-    <body name="block_21" pos="-10.350498211292571 9.825770468753888 2.6039404136976128" euler="0.0 0.0 -1.0170485105329623">
+    <body name="block_21" pos="-10.350498211292571 9.825770468753888 2.6039404136976128" euler="0.0 0.0 -58.27258721360539">
       <geom name="block_21_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_21_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_21_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_21_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_22 (block frame) -->
-    <body name="block_22" pos="0.9065582862749544 4.167343732241367 2.6258060402509034" euler="0.0 0.0 -0.6566625483310676">
+    <body name="block_22" pos="0.9065582862749544 4.167343732241367 2.6258060402509034" euler="0.0 0.0 -37.623992583675616">
       <geom name="block_22_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_22_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_22_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_22_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_23 (block frame) -->
-    <body name="block_23" pos="7.46869175689779 2.148058713047714 2.4495141358949337" euler="0.0 0.0 0.19205109641291945">
+    <body name="block_23" pos="7.46869175689779 2.148058713047714 2.4495141358949337" euler="0.0 0.0 11.003717275320348">
       <geom name="block_23_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_23_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_23_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_23_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_24 (block frame) -->
-    <body name="block_24" pos="-9.576777475960586 -7.012251349974658 2.676352344205774" euler="0.0 0.0 0.8778777124460698">
+    <body name="block_24" pos="-9.576777475960586 -7.012251349974658 2.676352344205774" euler="0.0 0.0 50.298687851759105">
       <geom name="block_24_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_24_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_24_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_24_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_25 (block frame) -->
-    <body name="block_25" pos="8.201985611110192 -5.754767639823164 2.3138655817115668" euler="0.0 0.0 -0.12696664860893234">
+    <body name="block_25" pos="8.201985611110192 -5.754767639823164 2.3138655817115668" euler="0.0 0.0 -7.274653104212388">
       <geom name="block_25_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_25_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_25_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_25_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_26 (block frame) -->
-    <body name="block_26" pos="-11.00733628527693 1.174206092730568 2.6224499974970343" euler="0.0 0.0 0.8318528326249169">
+    <body name="block_26" pos="-11.00733628527693 1.174206092730568 2.6224499974970343" euler="0.0 0.0 47.66165648541021">
       <geom name="block_26_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_26_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_26_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_26_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_27 (block frame) -->
-    <body name="block_27" pos="16.268906504978325 4.2055741588662965 2.396578108381624" euler="0.0 0.0 0.6098740742012474">
+    <body name="block_27" pos="16.268906504978325 4.2055741588662965 2.396578108381624" euler="0.0 0.0 34.94321048617988">
       <geom name="block_27_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_27_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_27_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_27_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_28 (block frame) -->
-    <body name="block_28" pos="9.261049022641462 -1.9259257078845486 1.8019956793051461" euler="0.0 0.0 0.6908670081374471">
+    <body name="block_28" pos="9.261049022641462 -1.9259257078845486 1.8019956793051461" euler="0.0 0.0 39.58376377110602">
       <geom name="block_28_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_28_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_28_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_28_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
     <!-- block_29 (block frame) -->
-    <body name="block_29" pos="2.6132599408975423 -9.452564403915119 2.5103455068046605" euler="0.0 0.0 -0.2596999337076135">
+    <body name="block_29" pos="2.6132599408975423 -9.452564403915119 2.5103455068046605" euler="0.0 0.0 -14.87971014127352">
       <geom name="block_29_right_vertical_edge" type="box" pos="0.0 0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_29_left_vertical_edge" type="box" pos="0.0 -0.925 0.0" size="0.075 0.075 0.75" material="obstacle_blue"/>
       <geom name="block_29_top_horizontal_edge" type="box" pos="0.0 0.0 0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
       <geom name="block_29_bottom_horizontal_edge" type="box" pos="0.0 0.0 -0.675" size="0.075 0.85 0.075" material="obstacle_blue"/>
     </body>
+
+        </worldbody>
+    </mujoco>
     
-  </worldbody>
-</mujoco>

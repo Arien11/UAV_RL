@@ -115,6 +115,8 @@
       <site name="motor2_site" pos="0.0325 -0.0325 0.013"/>
       <site name="motor3_site" pos="-0.0325 -0.0325 0.013"/>
       <site name="motor4_site" pos="-0.0325 0.0325 0.013"/>
+      
+      <camera name="drone_depth_camera" pos="0 0.03 0" xyaxes="1 0 0 0 0 1" fovy="60"/>
 
     </body>
   </worldbody>
