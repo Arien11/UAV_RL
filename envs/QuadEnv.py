@@ -1,69 +1,192 @@
 import collections
-from typing import Optional
-
+import copy
+import yaml
+from typing import Optional, Dict, Any, Union
 import envs.Observe as Observe
-from Tasks.Hover_Task import *
 from envs.Simulators.MujocoSim import *
-from envs.QuadBaseEnv import QuadBaseEnv
 from envs.interface import RobotInterface
-from QuadControl.Quad import *
 from envs.config_builder import Configuration
+from envs.Sensors.SensorsManager import SensorManager
 from Tasks.trace_task import TraceTask
+from QuadControl.Quad import *
+from Tasks.Hover_Task import *
 
 
-# 指定无人机的基类配置
-class QuadEnv(QuadBaseEnv):
+class QuadEnv(MuJoCoSimulator):
+    def __init__(self, config):
+        MuJoCoSimulator.__init__(self, config)
+        self.cfg = Configuration(**config)
+        
+        # 历史记录长度
+        self.motion_history_len = getattr(self.cfg, 'motion_history_len', 1)
+        self.ext_history_len = getattr(self.cfg, 'ext_history_len', 1)
+        
+        # 历史记录 - 分别存储运动状态和传感器数据
+        self.motion_history = collections.deque(maxlen=self.motion_history_len)
+        self.ext_history = {}  # {sensor_name: deque}
+        
+        # 智能体设置
+        self.interface = None
+        self.nominal_pose = None
+        self.task = None
+        self.robot = None
+        self._setup_robot()
+        
+        self.default_model = copy.deepcopy(self.model)
+        self.action_space = None
+        self._setup_spaces()
     
     def _setup_robot(self):
         """设置机器人组件"""
         control_dt = 0.02
-        # 设置交互接口interface
+
+        # 设置数据交互接口interface
         self.interface = RobotInterface(self.model, self.data)
         self.frame_skip = int(control_dt / self.interface.sim_dt())
+
         # 设置任务task
-        self._setup_task(control_dt)
+        self._setup_task()
         
         # 设置Robot
         self.robot = Quadrotor(self.task, self.interface)
         
+        # 设置传感器管理器
+        sensor_config = self._get_sensor_config()
+        self.sensor_manager = SensorManager(sensor_config, sim=self)
+
         # 设置初始状态init state
         self.nominal_pose = [0.0, 0.0, 0.5, 1.0, 0.0, 0.0, 0.0]
     
-    def _setup_task(self, control_dt: float) -> None:
+    def _get_sensor_config(self):
+        """
+        从配置中获取传感器配置
+        
+        Returns:
+            传感器配置字典
+        """
+        if hasattr(self.cfg, 'sensors') and self.cfg.sensors:
+            sensors_list = []
+            for sensor in self.cfg.sensors:
+                if hasattr(sensor, 'to_dict'):
+                    sensors_list.append(sensor.to_dict())
+                else:
+                    sensors_list.append(sensor)
+            return {
+                'sensors': sensors_list
+            }
+        # 如果配置中没有传感器，返回默认配置
+        return {}
+    
+    def _setup_task(self) -> None:
         """Setup the task instance. Must set self.task."""
         # self.task = TraceTask(self.interface)
         self.task = HoverTask(self.interface)
-        
-        # self.task.setup()
-        pass
     
     def _setup_spaces(self):
-        """设置动作空间与观测空间"""
-        # 动作空间
+        """
+        设置动作空间与观测空间
+        
+        观测空间结构：
+        {
+            'motion': np.ndarray,  # 运动状态 (位置、速度、姿态)
+            'sensors': Dict[str, np.ndarray]  # 传感器数据 (按传感器名称)
+        }
+        """
         self.action_space = self.task.action_space
         self.prev_prediction = self.task.action_space
         
-        # 观测空间
-        self.base_obs_len = self._get_robot_state_len() + self._get_num_external_obs()  # 机器人状态 + 外部观测
-        self.observation_space = np.zeros(self.base_obs_len * self.history_len)  # 历史状态堆叠
+        base_motion_len = self._get_robot_state_len()
         
-        # 观测量标准化
-        # self._setup_obs_normalization()
+        self.observation_space = {
+            'motion_shape': (base_motion_len,),
+            'sensors_shapes': self._get_sensors_shapes()
+        }
+    
+    def get_obs(self) -> Dict[str, Any]:
+        """
+        获取完整的观测量 - 分离运动状态和传感器数据
+        Returns:
+            {
+                'motion': np.ndarray,             # 运动状态 (motion_history_len, motion_len)
+                'sensors': Dict[str, np.ndarray]  # 传感器数据 (按传感器名称)
+            }
+        """
+        motion_state = self._get_robot_state()
+        sensors_data = self._get_sensors_data()
+        
+        # 存储运动状态到历史记录
+        self.motion_history.appendleft(motion_state)
+        
+        # 存储传感器数据到历史记录
+        for sensor_name, sensor_data in sensors_data.items():
+            if sensor_name not in self.ext_history:
+                self.ext_history[sensor_name] = collections.deque(maxlen=self.ext_history_len)
+            self.ext_history[sensor_name].appendleft(sensor_data)
+        
+        # 填充历史记录，长度为motion_history_len和ext_history_len
+        if len(self.motion_history) == 0:
+            for _ in range(self.motion_history_len):
+                self.motion_history.appendleft(np.zeros_like(motion_state))
+        
+        for sensor_name, sensor_data in sensors_data.items():
+            if len(self.ext_history.get(sensor_name, [])) == 0:
+                for _ in range(self.ext_history_len):
+                    self.ext_history[sensor_name].appendleft(np.zeros_like(sensor_data))
+        
+        return {
+            'motion': np.array(self.motion_history),
+            'sensors': {
+                sensor_name: np.array(history)
+                for sensor_name, history in self.ext_history.items()
+            }
+        }
     
     def _get_robot_state(self):
-        """获得机器人状态观测量"""
+        """获得机器人运动状态观测量"""
         pos = Observe.get_pos(self.interface)
         quat = Observe.get_quat(self.interface)
         vel = Observe.get_vel(self.interface)
         omega = Observe.get_omega(self.interface)
-        # 有需要可以添加观测噪声
         
         return np.concatenate([pos, quat, vel, omega])
     
-    def _get_external_state(self):
-        """获得机器人外部观测量"""
-        return None
+    def _get_sensors_data(self) -> Dict[str, np.ndarray]:
+        """
+        获得所有传感器的数据
+        
+        Returns:
+            {sensor_name: sensor_data}
+        """
+        sensors_data = {}
+        # 遍历所有传感器，获取数据
+        if hasattr(self, 'sensor_manager'):
+            for i, sensor in enumerate(self.sensor_manager.sensors):
+                sensor_name = sensor.type     # 获取传感器名称，或使用默认值
+                try:
+                    data = sensor.get_observation()
+                    sensors_data[sensor_name] = data
+                except Exception as e:
+                    print(f"获取传感器 {sensor_name} 数据失败: {e}")
+        return sensors_data
     
+    def _get_sensors_shapes(self) -> Dict[str, tuple]:
+        """
+        获取所有传感器的形状
+        
+        Returns:
+            {sensor_name: shape_tuple}
+        """
+        shapes = {}
+        if hasattr(self, 'sensor_manager'):
+            for i, sensor in enumerate(self.sensor_manager.sensors):
+                sensor_name = sensor.type
+                try:
+                    shape = sensor.get_observation_shape()
+                    shapes[sensor_name] = shape
+                except Exception as e:
+                    print(f"获取传感器 {sensor_name} 形状失败: {e}")
+        return shapes
+
     def _setup_domain_randomization(self):
         pass
     
@@ -131,24 +254,15 @@ class QuadEnv(QuadBaseEnv):
         # 解析动作，生成轨迹信息
         traj_info = self.task.interpret_action_e2e(action)
         
-        # 执行仿真
         self._do_simulation(traj_info, self.frame_skip)
         
-        # 仿真后获取观测并计算奖励
         obs = self.get_obs()
         
-        rewards = self.task.calc_reward(action)  # 现在 action 是网络输出
+        rewards = self.task.calc_reward(action)
         total_reward = sum(rewards.values())
         done = self.task.done()
         
         self.prev_prediction = action
-        
-        # 域随机化
-        # if self.dynrand_interval > 0 and np.random.randint(self.dynrand_interval) == 0:
-        #     self._randomize_dynamics()
-        #
-        # if self.perturb_interval > 0 and np.random.randint(self.perturb_interval) == 0:
-        #     self._apply_perturbation()
         
         return obs, total_reward, done, rewards
     
@@ -158,8 +272,33 @@ class QuadEnv(QuadBaseEnv):
         """
         return 13
     
-    def _get_num_external_obs(self):
-        """Return length of UAV  external state vector
-        Px, Py, Pz, Vx, Vy, Vz, Wx, Wy, Wz, q1, q2, q3, q4,
+    def reset_model(self):
         """
-        return 0
+        重置环境，包含传感器重置
+        """
+        # 重置初始状态
+        init_qpos = self.nominal_pose.copy()
+        init_qvel = [0] * self.interface.nv()
+        self.set_state(np.asarray(init_qpos), np.asarray(init_qvel))
+        
+        # 重置任务状态
+        self.task.reset(iter_count=self.robot.iteration_count)
+
+        # 重置历史记录
+        self.motion_history.clear()
+        self.ext_history.clear()
+        
+        # 重置传感器状态
+        if hasattr(self, 'sensor_manager'):
+            try:
+                self.sensor_manager.reset()
+            except Exception as e:
+                print(f"重置传感器失败: {e}")
+        
+        return self.get_obs()
+    
+    def _apply_init_noise(self):
+        pass
+    
+    def _apply_observation_noise(self):
+        pass

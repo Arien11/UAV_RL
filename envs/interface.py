@@ -10,7 +10,6 @@ class RobotInterface:
     def __init__(self, model, data):
         self.model = model
         self.data = data
-        
         self.stepCounter = 0
     
     def nq(self):

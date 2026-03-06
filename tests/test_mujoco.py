@@ -1,9 +1,8 @@
 import sys
 import os
+from tkinter.constants import FALSE
 import numpy as np
-
-# 添加项目根目录到Python路径
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
@@ -183,15 +182,13 @@ def main():
     from envs.QuadEnv import QuadEnv
     
     # ========== 加载环境 ==========
-    with open(r"E:\UAV_RL\config\Quad_config.yaml", 'r') as f:
+    with open(r"E:\UAV_RL\config\QuadEnv_config.yaml", 'r') as f:
         config_data = yaml.safe_load(f)
-    cfg = Configuration(**config_data)
-    env = QuadEnv(r"E:\UAV_RL\config\env_config.yaml", cfg)
+    env = QuadEnv(config_data)
     obs = env.reset()
     
     # 控制参数（应与环境匹配）
     control_dt = 0.005  # 控制周期 (s)
-    sim_time = 30.0  # 仿真总时长 (s)
     
     # 计算 frame_skip（物理步长从 interface 获取）
     phys_dt = env.interface.sim_dt()
@@ -221,21 +218,27 @@ def main():
     # ========== 初始化相机显示窗口（可选）==========
     show_camera = True  # 设置为False可以大幅提升性能
     show_plt = False
-    fig, axes = None, None
+    fig_rgb, fig_depth = None, None
     im_rgb, im_depth = None, None
     
     if show_camera:
-        fig, axes = plt.subplots(1, 2, figsize=(6, 4))
-        im_rgb = axes[0].imshow(np.zeros((120, 160, 3), dtype=np.uint8))
-        axes[0].set_title('RGB Image')
-        axes[0].axis('off')
+        # RGB图像窗口
+        # fig_rgb = plt.figure('RGB Image', figsize=(3, 2))
+        # ax_rgb = fig_rgb.add_subplot(111)
+        # im_rgb = ax_rgb.imshow(np.zeros((120, 160, 3), dtype=np.uint8))
+        # ax_rgb.set_title('RGB Image')
+        # ax_rgb.axis('off')
+        # plt.tight_layout()
         
-        im_depth = axes[1].imshow(np.zeros((120, 160)), cmap='jet', vmin=0, vmax=5)
-        axes[1].set_title('Depth Image')
-        axes[1].axis('off')
-        cbar = plt.colorbar(im_depth, ax=axes[1], label='Depth (m)')
-        
+        # Depth图像窗口
+        fig_depth = plt.figure('Depth Image', figsize=(3, 2))
+        ax_depth = fig_depth.add_subplot(111)
+        im_depth = ax_depth.imshow(np.zeros((120, 160)), cmap='jet', vmin=0, vmax=5)
+        ax_depth.set_title('Depth Image')
+        ax_depth.axis('off')
+        cbar = plt.colorbar(im_depth, ax=ax_depth, label='Depth (m)')
         plt.tight_layout()
+        
         plt.ion()
         plt.show()
     
@@ -260,7 +263,7 @@ def main():
             vel = env.interface.get_vel()
             omega = env.interface.get_omega()
             t = env.data.time
-
+            obs = env.get_obs()
             pos_des, vel_des, acc_des = Eight_traj(t)
             #pos_des, vel_des, acc_des = Circle_traj(t)
             # offset = offset_generator(t)
@@ -304,11 +307,11 @@ def main():
             if show_camera and sim_steps % 50 == 0:
                 try:
                     # rgb, depth = env.get_camera_data()
-                    depth = env.get_camera_depth()
+                    depth = obs['sensors']['depth'][0]
                     # im_rgb.set_data(rgb)
                     im_depth.set_data(depth)
-                    fig.canvas.draw_idle()  # 使用draw_idle代替draw更高效
-                    fig.canvas.flush_events()
+                    fig_depth.canvas.draw_idle()  # 使用draw_idle代替draw更高效
+                    fig_depth.canvas.flush_events()
                 except Exception as e:
                     print(f"获取相机数据失败: {e}")
             
@@ -336,7 +339,8 @@ def main():
     finally:
         if show_camera:
             plt.ioff()
-            plt.close(fig)
+            plt.close(fig_rgb)
+            plt.close(fig_depth)
         if use_viewer:
             viewer.close()
         env.close()

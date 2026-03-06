@@ -24,20 +24,6 @@ from rl.algos.ppo import PPO
 from train.logger import *
 import mujoco
 
-
-def create_single_env():
-    from envs.config_builder import Configuration
-    with open("E:\\UAV_RL\config\Quad_config.yaml", 'r') as f:
-        config_data = yaml.safe_load(f)
-    cfg = Configuration(**config_data)
-    env = QuadEnv("E:\\UAV_RL\config\env_config.yaml", cfg)
-    return env
-
-
-def make_env_fc():
-    return create_single_env()
-
-
 class Training:
     def __init__(self, env_fn, algo, args=None, seed=None):
         

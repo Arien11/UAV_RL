@@ -12,6 +12,16 @@ os.chdir(project_root)
 # 导入并运行训练
 from train._train import *
 
+def create_single_env():
+    with open(r"E:\UAV_RL\config\QuadEnv_config.yaml", 'r') as f:
+        config_data = yaml.safe_load(f)
+    env = QuadEnv(config_data)
+    return env
+
+def make_env_fc():
+    return create_single_env()
+
+
 if __name__ == '__main__':
     # train
     _ppo = PPO(make_env_fc)

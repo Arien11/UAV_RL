@@ -1,7 +1,0 @@
-# configs/env_config.yaml
-
-model:
-  xml_path: E:\UAV_RL\envs\crazyfile\seed_6.xml
-  timestep: 0.002
-  gravity: [0, 0, -9.81]
-

@@ -29,13 +29,15 @@ class XMLModelLoader:
 
 
 class MuJoCoSimulator(ABC):
-    def __init__(self, model_path):
+    def __init__(self, config):
+        """
+        初始化MuJoCo仿真器
+        
+        Args:
+            config: 配置字典，包含 'model' 键
+        """
         XML_loader = XMLModelLoader()
-        env_config = {}
-        if model_path:
-            with open(model_path, 'r') as f:
-                env_config = yaml.safe_load(f)
-        self.model = XML_loader.load(env_config.get('model', {}))
+        self.model = XML_loader.load(config.get('model', {}))
         self.data = mujoco.MjData(self.model)
         self.viewer = None  # 添加viewer引用
         self._viewer_paused = False
@@ -59,7 +61,6 @@ class MuJoCoSimulator(ABC):
         """重置robot到其特定的初始状态"""
         # raise NotImplementedError
 
-    
     def viewer_setup(self):
         """
         This method is called when the viewer is initialized.
@@ -193,6 +194,3 @@ class MuJoCoSimulator(ABC):
         depth = self.get_camera_depth(force_update=force_update)
         return rgb, depth
 
-
-if __name__ == '__main__':
-    ...
