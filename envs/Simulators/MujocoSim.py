@@ -54,6 +54,11 @@ class MuJoCoSimulator(ABC):
         self._cached_rgb = None
         self._cached_depth = None
     
+    @classmethod
+    def get_instance(self):
+        if self._instance is None: self._instance = self()
+        return self._instance   
+
     def reset_model(self):
         if self._camera_renderer is not None:
             self._camera_renderer.close()
