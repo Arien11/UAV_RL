@@ -207,6 +207,7 @@ class QuadEnv(MuJoCoSimulator):
     
     def _do_simulation(self, traj_info, n_frames):
         for _ in range(n_frames):
+            # 轨迹解算
             if traj_info["traj_active"]:
                 t = self.interface.data.time - traj_info["traj_start_time"]
                 if t <= traj_info["traj_duration"]:
@@ -238,12 +239,18 @@ class QuadEnv(MuJoCoSimulator):
             quat = self.interface.get_quat()
             vel = self.interface.get_vel()
             omega = self.interface.get_omega()
+
+            # 构建期望状态
             desired_state = {'pos_des': des_pos, 'vel_des': des_vel,
                              'acc_des': des_acc, 'yaw_des': 0.0}
             # print(f"t={t:.3f}, pos0={traj_info['pos0']}, pos1={traj_info['pos1']}, des_pos={des_pos}")
             state = {'pos': pos, 'vel': vel, 'quat': quat, 'omega': omega}
+            
+            # 计算控制输入
             ctrl, thrust_norm, scale, tau_des_max = self.robot.ctrl.update(state, desired_state)
             self.data.ctrl[:] = ctrl
+
+            # 执行物理模拟
             mujoco.mj_step(self.model, self.data)
             # print(ctrl)
     

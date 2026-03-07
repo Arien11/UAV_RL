@@ -59,13 +59,6 @@ class MuJoCoSimulator(ABC):
         if self._instance is None: self._instance = self()
         return self._instance   
 
-    def reset_model(self):
-        if self._camera_renderer is not None:
-            self._camera_renderer.close()
-            self._camera_renderer = None
-        """重置robot到其特定的初始状态"""
-        # raise NotImplementedError
-
     def viewer_setup(self):
         """
         This method is called when the viewer is initialized.

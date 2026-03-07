@@ -10,9 +10,9 @@ class SE3Controller:
         self.mixer = LinearMixer()  # 4x4 混控矩阵
         self.max_total_thrust = 0.6292
         # 控制增益（针对 33g 无人机调整）
-        self.Kp = np.array([0.2, 0.2, 0.5])  # 位置增益
-        self.Kv = np.array([0.5, 0.5, 1.0])  # 速度增益
-        self.KR = np.array([2.0, 2.0, 2.0])  # 再减半
+        self.Kp = np.array([0.2, 0.2, 0.5])  
+        self.Kv = np.array([0.5, 0.5, 1.0])  
+        self.KR = np.array([2.0, 2.0, 2.0])  
         self.Kw = np.array([0.5, 0.5, 0.5])
     
     def update(self, state, desired_state):
@@ -23,8 +23,8 @@ class SE3Controller:
         
         # 归一化四元数并转换为旋转矩阵
         quat = quat / np.linalg.norm(quat)
-        quat_scipy = np.roll(quat, -1)  # [w,x,y,z] -> [x,y,z,w]
-        R = scipy.spatial.transform.Rotation.from_quat(quat_scipy).as_matrix()
+        # quat_scipy = np.roll(quat, -1)  # [w,x,y,z] -> [x,y,z,w]
+        R = scipy.spatial.transform.Rotation.from_quat(quat).as_matrix()
         
         pos_des = desired_state['pos_des']
         vel_des = desired_state['vel_des']

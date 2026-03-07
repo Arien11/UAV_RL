@@ -1,0 +1,3 @@
+[submodule "utils/RaceUtils"]
+	path = utils/RaceUtils
+	url = https://github.com/KafuuChikai/RaceUtils.git
