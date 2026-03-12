@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from rl.network.base import Net
+from algos.network.base import Net
 
 
 class Critic(Net):

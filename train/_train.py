@@ -18,9 +18,9 @@ import datetime
 from envs.QuadEnv import QuadEnv
 from envs.Simulators.MujocoSim import *
 from Tasks.Hover_Task import *
-from rl.workers.rolloutworker import RolloutWorker
-from rl.storage.rollout_storage import BatchData
-from rl.algos.ppo import PPO
+from algos.workers.rolloutworker import RolloutWorker
+from algos.storage.rollout_storage import BatchData
+from algos.rl_algos.ppo import PPO
 from train.logger import *
 import mujoco
 
@@ -548,7 +548,7 @@ class Training:
 
 
 def load_policy_for_inference(checkpoint_path, device='cpu'):
-    from rl.network.actor import FF_Actor  # 你的Actor类
+    from algos.network.actor import FF_Actor  # 你的Actor类
     """加载训练好的策略网络用于推理"""
     checkpoint = torch.load(checkpoint_path, map_location=device)
     

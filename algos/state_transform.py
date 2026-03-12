@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from rl.primitive import LatticePrimitive
+from algos.primitive import LatticePrimitive
 
 class StateTransform:
     def __init__(self):

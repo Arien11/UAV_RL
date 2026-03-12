@@ -11,8 +11,8 @@ from copy import deepcopy
 
 import ray
 import torch
-from rl.storage.rollout_storage import Buffer
-from rl.utils.seeding import set_global_seeds
+from algos.storage.rollout_storage import Buffer
+from algos.utils.seeding import set_global_seeds
 
 
 class RolloutWorkerError(Exception):

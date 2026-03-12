@@ -9,7 +9,7 @@ class Poly5Solver:
             where,
                 p(0)   = c0
                 v(0)   = p'(0)  = c1
-                v(0)   = p''(0) = 2*c2 = a0 → c2 = a0/2
+                a(0)   = p''(0) = 2*c2 = a0 → c2 = a0/2
                 p(T)   = p(T)   = c0 + c1*T + c2*T^2 + c3*T^3 + c4*T^4 + c5*T^5
                 v(T)   = p'(T)  = c1 + 2*c2*T + 3*c3*T^2 + 4*c4*T^3 + 5*c5*T^4
                 a(T)   = p''(T) = 2*c2 + 6*c3*T + 12*c4*T^2 + 20*c5*T^3

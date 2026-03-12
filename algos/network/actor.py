@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from rl.network.base import *
+from algos.network.base import *
 import torch.distributions as D
 
 

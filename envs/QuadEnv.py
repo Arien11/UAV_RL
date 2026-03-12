@@ -55,7 +55,7 @@ class QuadEnv(MuJoCoSimulator):
         self.sensor_manager = SensorManager(sensor_config, sim=self)
 
         # 设置初始状态init state
-        self.nominal_pose = [0.0, 0.0, 0.5, 1.0, 0.0, 0.0, 0.0]
+        self.nominal_pose = [0, 0, 0.5, 1.0, 0.0, 0.0, 0.0]
     
     def _get_sensor_config(self):
         """

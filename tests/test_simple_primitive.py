@@ -10,8 +10,8 @@ if project_root not in sys.path:
 import numpy as np
 import matplotlib.pyplot as plt
 
-from rl.primitive import LatticePrimitive
-from rl.state_transform import StateTransform
+from algos.primitive import LatticePrimitive
+from algos.state_transform import StateTransform
 
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False

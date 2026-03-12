@@ -13,8 +13,9 @@ import scipy.spatial.transform
 import matplotlib.pyplot as plt
 from QuadControl.mixer.linear_mixer import *
 from utils.logger import VisLogger
-from envs.maps.esdf_generate import ESDFGenerator, DifferentiableESDF
-
+from envs.maps.esdf_generate import ESDFGenerator
+from envs.maps.esdf_torch import ESDFTorch
+from tests.test_safety_loss_sdf import SDFTester
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
@@ -82,35 +83,6 @@ def offset_generator(t, start_time=2.0, period=5.0, amplitude=0.05):
     sign = 1 if cycle == 0 else -1
     return amplitude * sign * np.array([1, 1, 1])
 
-
-def grad_check(generator, pos, grad_autograd, eps = 1e-4):
-    grad_numerical = np.zeros_like(pos)
-        
-    for dim in range(3):
-        # 正向扰动
-        point_plus = pos.copy()
-        point_plus[dim] += eps
-        dist_plus, _ = generator.distance_kdtree(point_plus)
-        
-        # 负向扰动
-        point_minus = pos.copy()
-        point_minus[dim] -= eps
-        dist_minus, _ = generator.distance_kdtree(point_minus)
-        
-        # 中心差分
-        grad_numerical[dim] = (dist_plus - dist_minus) / (2 * eps)
-    
-    # ========== 验证梯度正确性 ==========
-    grad_error = np.linalg.norm(grad_autograd - grad_numerical)
-    
-    print(f"  自动微分梯度: {grad_autograd}")
-    print(f"  数值梯度:     {grad_numerical}")
-    print(f"  梯度误差:     {grad_error:.2e}")
-    if grad_error < 1e-2:
-        print("  ✅ 梯度验证通过！")
-    else:
-        print("  ⚠️  梯度误差较大")
-
 # ================== 主仿真程序 ==================
 def main():
     import yaml
@@ -126,11 +98,20 @@ def main():
     print(f"\n初始状态: {env.nominal_pose}")
 
     # ========== 创建ESDF生成器（离线预计算）==========
-    print("\n创建ESDF数据...")
-    generator = ESDFGenerator(env.model, env.data)
-    generator.sample_obstacle_points(num_points_per_geom=100)
-    esdf_module = DifferentiableESDF(generator)
+    pcd_path = "envs/crazyfile/seed_6.pcd"
+    voxel_size = 0.2
+    map_expand_min = np.array([0, 0, 0.2])
+    map_expand_max = np.array([0, 0, 6.0])
 
+    # 创建 SDF 测试器
+    print("创建 SDF 测试器")
+    tester = SDFTeqster(
+        pcd_path=pcd_path,
+        voxel_size=voxel_size,
+        map_expand_min=map_expand_min,
+        map_expand_max=map_expand_max,
+        device='cpu'
+    )
     # 控制参数（应与环境匹配）
     control_dt = 0.005  # 控制周期 (s)
     
@@ -192,10 +173,10 @@ def main():
     thrust_norm_lst = []
     scale_lst = []
     tau_des_max_lst = []
-    
+    cost_lst = []
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # 时间同步变量
     last_wall_time = time.time()
-    
     print("\n开始仿真...")
     try:
         while True:
@@ -209,17 +190,18 @@ def main():
             vel = env.interface.get_vel()
             omega = env.interface.get_omega()
             obs = env.get_obs()
+            cost, dist1 = tester.query_distance(torch.tensor(pos.reshape(1, 1, 3), dtype=torch.float))
+            # dist1 = generator.query_esdf_grid(pos, interpolate=True)
+            # dist2 = esdf_torch.query_distance(torch.tensor(pos.reshape(1, 1, 3), dtype=torch.float32, device=device))
+            # print(f"dist1: {dist1}")
+            # 调试信息
+            # print(f"pos: {pos}, dist: {dist}")
+            # print(f"ESDF min: {generator._esdf_grid.min()}, max: {generator._esdf_grid.max()}")
 
-            esdf_pos = torch.tensor(pos, dtype=torch.float32, requires_grad=True) 
-            distance = esdf_module(esdf_pos)                # 计算到最近障碍物的距离
-            distance.backward()                             # 反向传播计算梯度
-            grad_autograd = esdf_pos.grad.numpy().copy()    # 计算得到esdf梯度
-            
-            grad_check(generator, pos, grad_autograd)
             
             # ========== 跟踪任务 ==========
             pos_des, vel_des, acc_des = Eight_traj(t)   # 8字轨迹
-            #pos_des, vel_des, acc_des = Circle_traj(t)  # 圆周轨迹
+            # pos_des, vel_des, acc_des = Circle_traj(t)  # 圆周轨迹
             # offset = offset_generator(t)
             # 悬停
             # pos_des = [0, 0, 0.5]
@@ -242,10 +224,9 @@ def main():
                     pos_des[0], pos_des[1], pos_des[2],     # 目标位置 (19-21)
                     thrust_norm                             # 推力 (22)
             ])    
-            # 转换为控制量 (0~1)
-            env.data.ctrl[:] = ctrl
- 
+            
             # ========== 多步物理（正确做法）==========
+            env.data.ctrl[:] = ctrl
             for _ in range(frame_skip):
                 mujoco.mj_step(env.model, env.data)
 
@@ -277,7 +258,8 @@ def main():
             
             # ========== 记录数据 ==========        
             logger.log(t, log_state, None)
-            dist_lst.append(distance.detach().numpy())
+            # dist_lst.append(dist)
+            cost_lst.append(cost.item())
             rpy_lst.append(rpy)
             pos_lst.append(pos)
             pos_des_lst.append(pos_des)
@@ -301,7 +283,9 @@ def main():
         env.close()
     
 
-    plt.plot(time_lst, dist_lst, label='x')
+    # plt.plot(time_lst, dist_lst, label='x')
+    # plt.show()
+    plt.plot(time_lst, cost_lst, label='cost')
     plt.show()
     # ========== 绘图 ==========
     if show_plt:

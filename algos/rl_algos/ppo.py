@@ -3,9 +3,9 @@ import torch
 import torch.optim as optim
 from torch.nn import functional as F
 from torch.nn.utils.rnn import pad_sequence
-from rl.network.actor import *
-from rl.network.critic import *
-from rl.utils.normalize import *
+from algos.network.actor import *
+from algos.network.critic import *
+from algos.utils.normalize import *
 
 
 class PPO:
@@ -192,7 +192,7 @@ if __name__ == '__main__':
     import torch
     from unittest.mock import Mock
     
-    from rl.workers.rolloutworker import RolloutWorker
+    from algos.workers.rolloutworker import RolloutWorker
     from Tasks.Hover_Task import *
     from envs.Simulators.MujocoSim import *
     from envs.QuadEnv import QuadEnv
